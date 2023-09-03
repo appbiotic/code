@@ -4,14 +4,14 @@ version = 3
 
 [[package]]
 name = "appbiotic"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "appbiotic-code-error",
 ]
 
 [[package]]
 name = "appbiotic-code-error"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "strum",
  "strum_macros",
