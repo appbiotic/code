@@ -1,0 +1,22 @@
+appbiotic-code
+Copyright 2023 Appbiotic, Inc.
+
+This project includes or links to components from the projects listed below.
+Appbiotic, Inc. licenses them under the terms in the LICENSE file, except for
+components that require that they remain under their original license. When an
+appbioitc-code compoment is a derivative work that requires the use of such an
+original license, or some other type of notice, it will be noted in a NOTICE
+and/or LICENSE file in the relevant component of this project under the
+appbiotic/ directory.
+
+Google APIs (Apache 2.0)
+https://github.com/googleapis/googleapis
+Copyright Google, Inc.
+
+Strum (MIT)
+https://github.com/Peternator7/strum
+Copyright (c) 2019 Peter Glotfelty
+
+thiserror (MIT)
+https://github.com/dtolnay/thiserror
+Copyright David Tolnay

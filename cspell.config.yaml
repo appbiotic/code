@@ -1,0 +1,16 @@
+---
+$schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
+version: '0.2'
+dictionaryDefinitions:
+  - name: external-words
+    path: '.cspell-words/external.txt'
+    addWords: true
+  - name: project-words
+    path: '.cspell-words/project.txt'
+    addWords: true
+dictionaries:
+  - external-words
+  - project-words    
+ignorePaths:
+ - '.cspell/*-words.txt'
+ - '**/NOTICE'
