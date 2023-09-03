@@ -3,6 +3,13 @@
 version = 3
 
 [[package]]
+name = "appbiotic"
+version = "0.1.0"
+dependencies = [
+ "appbiotic-code-error",
+]
+
+[[package]]
 name = "appbiotic-code-error"
 version = "0.1.0"
 dependencies = [
