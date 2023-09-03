@@ -1,0 +1,11 @@
+[package]
+name = "appbiotic-code-error"
+version = "0.1.0"
+edition = "2021"
+authors = ["kris@appbiotic.com"]
+description = "A set of error types to build services that can be managed similarly."
+
+[dependencies]
+strum = "0.25"
+strum_macros = "0.25"
+thiserror = "1.0.48"
