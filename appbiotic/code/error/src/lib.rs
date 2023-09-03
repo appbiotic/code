@@ -413,6 +413,121 @@ impl Error {
         }
     }
 }
+
+#[cfg(feature = "with-http")]
+impl From<Error> for http::StatusCode {
+    fn from(value: Error) -> Self {
+        match value {
+            Error::Cancelled(_) => {
+                http::StatusCode::from_u16(499).unwrap_or(http::StatusCode::IM_A_TEAPOT)
+            }
+            Error::Unknown(_) => http::StatusCode::INTERNAL_SERVER_ERROR,
+            Error::InvalidArgument(_) => http::StatusCode::BAD_REQUEST,
+            Error::DeadlineExceeded(_) => http::StatusCode::GATEWAY_TIMEOUT,
+            Error::NotFound(_) => http::StatusCode::NOT_FOUND,
+            Error::AlreadyExists(_) => http::StatusCode::CONFLICT,
+            Error::PermissionDenied(_) => http::StatusCode::FORBIDDEN,
+            Error::Unauthenticated(_) => http::StatusCode::UNAUTHORIZED,
+            Error::ResourceExhausted(_) => http::StatusCode::TOO_MANY_REQUESTS,
+            Error::FailedPrecondition(_) => http::StatusCode::BAD_REQUEST,
+            Error::Aborted(_) => http::StatusCode::CONFLICT,
+            Error::OutOfRange(_) => http::StatusCode::BAD_REQUEST,
+            Error::Unimplemented(_) => http::StatusCode::NOT_IMPLEMENTED,
+            Error::Internal(_) => http::StatusCode::INTERNAL_SERVER_ERROR,
+            Error::Unavailable(_) => http::StatusCode::SERVICE_UNAVAILABLE,
+            Error::DataLoss(_) => http::StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+}
+
+// TODO: Properly map error details into a tonic Status.
+#[cfg(feature = "with-tonic")]
+impl Error {
+    pub fn into_tonic_status(self) -> tonic::Status {
+        match self {
+            Error::Internal(status) => {
+                tonic::Status::new(tonic::Code::Internal, status.message.unwrap_or_default())
+            }
+            Error::Cancelled(status) => {
+                tonic::Status::new(tonic::Code::Cancelled, status.message.unwrap_or_default())
+            }
+            Error::Unknown(status) => {
+                tonic::Status::new(tonic::Code::Unknown, status.message.unwrap_or_default())
+            }
+            Error::InvalidArgument(status) => tonic::Status::new(
+                tonic::Code::InvalidArgument,
+                status.message.unwrap_or_default(),
+            ),
+            Error::DeadlineExceeded(status) => tonic::Status::new(
+                tonic::Code::DeadlineExceeded,
+                status.message.unwrap_or_default(),
+            ),
+            Error::NotFound(status) => {
+                tonic::Status::new(tonic::Code::NotFound, status.message.unwrap_or_default())
+            }
+            Error::AlreadyExists(status) => tonic::Status::new(
+                tonic::Code::AlreadyExists,
+                status.message.unwrap_or_default(),
+            ),
+            Error::PermissionDenied(status) => tonic::Status::new(
+                tonic::Code::PermissionDenied,
+                status.message.unwrap_or_default(),
+            ),
+            Error::Unauthenticated(status) => tonic::Status::new(
+                tonic::Code::Unauthenticated,
+                status.message.unwrap_or_default(),
+            ),
+            Error::ResourceExhausted(status) => tonic::Status::new(
+                tonic::Code::ResourceExhausted,
+                status.message.unwrap_or_default(),
+            ),
+            Error::FailedPrecondition(status) => tonic::Status::new(
+                tonic::Code::FailedPrecondition,
+                status.message.unwrap_or_default(),
+            ),
+            Error::Aborted(status) => {
+                tonic::Status::new(tonic::Code::Aborted, status.message.unwrap_or_default())
+            }
+            Error::OutOfRange(status) => {
+                tonic::Status::new(tonic::Code::OutOfRange, status.message.unwrap_or_default())
+            }
+            Error::Unimplemented(status) => tonic::Status::new(
+                tonic::Code::Unimplemented,
+                status.message.unwrap_or_default(),
+            ),
+            Error::Unavailable(status) => {
+                tonic::Status::new(tonic::Code::Unavailable, status.message.unwrap_or_default())
+            }
+            Error::DataLoss(status) => {
+                tonic::Status::new(tonic::Code::DataLoss, status.message.unwrap_or_default())
+            }
+        }
+    }
+}
+
+#[cfg(feature = "with-tonic")]
+impl TryFrom<tonic::Status> for Error {
+    type Error = Error;
+
+    fn try_from(value: tonic::Status) -> Result<Self, Self::Error> {
+        match value.code() {
+            tonic::Code::Ok => Err(Error::invalid_argument("Cannot convert OK status to Error")),
+            tonic::Code::Cancelled => Ok(Error::cancelled(value.message())),
+            tonic::Code::Unknown => Ok(Error::unknown(value.message())),
+            tonic::Code::InvalidArgument => Ok(Error::invalid_argument(value.message())),
+            tonic::Code::DeadlineExceeded => Ok(Error::deadline_exceeded(value.message())),
+            tonic::Code::NotFound => Ok(Error::not_found(value.message())),
+            tonic::Code::AlreadyExists => Ok(Error::already_exists(value.message())),
+            tonic::Code::PermissionDenied => Ok(Error::permission_denied(value.message())),
+            tonic::Code::ResourceExhausted => Ok(Error::resource_exhausted(value.message())),
+            tonic::Code::FailedPrecondition => Ok(Error::failed_precondition(value.message())),
+            tonic::Code::Aborted => Ok(Error::aborted(value.message())),
+            tonic::Code::OutOfRange => Ok(Error::out_of_range(value.message())),
+            tonic::Code::Unimplemented => Ok(Error::unimplemented(value.message())),
+            tonic::Code::Internal => Ok(Error::internal(value.message())),
+            tonic::Code::Unavailable => Ok(Error::unavailable(value.message())),
+            tonic::Code::DataLoss => Ok(Error::data_loss(value.message())),
+            tonic::Code::Unauthenticated => Ok(Error::unauthenticated(value.message())),
         }
     }
 }

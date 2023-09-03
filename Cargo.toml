@@ -31,9 +31,17 @@ include = [
 [features]
 full = [
     "with-grpc",
+    "with-http",
+    "with-tonic",
 ]
 with-grpc = [
     "appbiotic-code-error/with-grpc",
+]
+with-http = [
+    "appbiotic-code-error/with-http",
+]
+with-tonic = [
+    "appbiotic-code-error/with-tonic",
 ]
 
 [dependencies]
