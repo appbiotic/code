@@ -8,7 +8,7 @@ resolver = "2"
 
 [package]
 name = "appbiotic"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
     "Kristopher Wuollett <kris@appbiotic.com>",
@@ -28,4 +28,4 @@ include = [
 ]
 
 [dependencies]
-appbiotic-code-error = { version = "0.1.1", path = "appbiotic/code/error", default-features = false}
+appbiotic-code-error = { version = "0.1.2", path = "appbiotic/code/error", default-features = false}
