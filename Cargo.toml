@@ -18,7 +18,6 @@ description = "Tools to package to build services that can be managed similarly.
 homepage = "https://appbiotic.com/"
 repository = "https://github.com/appbiotic/code/"
 readme = "README.md"
-publish-lockfile = true
 include = [
     "src/**/*.rs",
     "Cargo.lock",
