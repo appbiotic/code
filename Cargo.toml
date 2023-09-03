@@ -14,7 +14,7 @@ authors = [
     "Kristopher Wuollett <kris@appbiotic.com>",
 ]
 license-file = "LICENSE"
-description = "A collection of packages to build services that can be managed similarly."
+description = "Tools to package to build services that can be managed similarly."
 homepage = "https://appbiotic.com/"
 repository = "https://github.com/appbiotic/code/"
 readme = "README.md"
