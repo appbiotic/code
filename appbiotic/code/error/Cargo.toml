@@ -1,6 +1,6 @@
 [package]
 name = "appbiotic-code-error"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = [
     "Kristopher Wuollett <kris@appbiotic.com>",
@@ -10,7 +10,6 @@ description = "A set of error types to build services that can be managed simila
 homepage = "https://appbiotic.com/"
 repository = "https://github.com/appbiotic/code/"
 readme = "README.md"
-publish-lockfile = true
 
 [dependencies]
 strum = "0.25"

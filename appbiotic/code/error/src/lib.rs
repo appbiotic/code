@@ -70,7 +70,7 @@ impl Error {
 ///
 /// You can find out more about this error model and how to work with it in the
 /// [API Design Guide](https://cloud.google.com/apis/design/errors).
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct ErrorStatus {
     /// A developer-facing error message, which should be in English. Any
     /// user-facing error message should be localized and sent in the
@@ -79,15 +79,6 @@ pub struct ErrorStatus {
     /// A list of messages that carry the error details.  There is a common set
     /// of message types for APIs to use.    
     pub details: Option<Vec<ErrorDetails>>,
-}
-
-impl Default for ErrorStatus {
-    fn default() -> Self {
-        ErrorStatus {
-            message: None,
-            details: None,
-        }
-    }
 }
 
 impl ErrorStatus {
@@ -240,11 +231,7 @@ impl Field {
 impl fmt::Display for Field {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for i in (0..self.path_reversed.len()).rev() {
-            write!(
-                f,
-                r#"{}"#,
-                self.path_reversed.get(i).ok_or_else(|| fmt::Error)?,
-            )?;
+            write!(f, r#"{}"#, self.path_reversed.get(i).ok_or(fmt::Error)?,)?;
             if i > 0 {
                 write!(f, ".")?;
             }
