@@ -11,6 +11,9 @@ homepage = "https://appbiotic.com/"
 repository = "https://github.com/appbiotic/code/"
 readme = "README.md"
 
+[features]
+with-grpc = []
+
 [dependencies]
 strum = "0.25"
 strum_macros = "0.25"

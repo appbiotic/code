@@ -27,5 +27,14 @@ include = [
     "README.md",
 ]
 
+# TODO: Find or create tool to propagte orthogonal `with-*` features.
+[features]
+full = [
+    "with-grpc",
+]
+with-grpc = [
+    "appbiotic-code-error/with-grpc",
+]
+
 [dependencies]
 appbiotic-code-error = { version = "0.1.2", path = "appbiotic/code/error", default-features = false}

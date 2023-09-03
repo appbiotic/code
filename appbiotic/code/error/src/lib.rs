@@ -14,19 +14,232 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
+#[cfg(feature = "with-grpc")]
+mod grpc_code {
+    pub static CANCELLED: i32 = 1;
+    pub static UNKNOWN: i32 = 2;
+    pub static INVALID_ARGUMENT: i32 = 3;
+    pub static DEADLINE_EXCEEDED: i32 = 4;
+    pub static NOT_FOUND: i32 = 5;
+    pub static ALREADY_EXISTS: i32 = 6;
+    pub static PERMISSION_DENIED: i32 = 7;
+    pub static UNAUTHENTICATED: i32 = 16;
+    pub static RESOURCE_EXHAUSTED: i32 = 8;
+    pub static FAILED_PRECONDITION: i32 = 9;
+    pub static ABORTED: i32 = 10;
+    pub static OUT_OF_RANGE: i32 = 11;
+    pub static UNIMPLEMENTED: i32 = 12;
+    pub static INTERNAL: i32 = 13;
+    pub static UNAVAILABLE: i32 = 14;
+    pub static DATA_LOSS: i32 = 15;
+}
+
+// TODO: Find or create library for format and flow markdown comments.
+
 #[derive(Clone, Debug, IntoStaticStr)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum Error {
-    /// Internal errors. This means that some invariants expected by the
-    /// underlying system have been broken. This error code is reserved for
-    /// serious errors.
-    Internal(ErrorStatus),
-    /// Unknown error. For example, this error may be returned when a Status
+    /// The operation was cancelled, typically by the caller.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  499 | Client Closed Request                               |
+    /// | gRPC    |    1 | Cancelled                                           |
+    Cancelled(ErrorStatus),
+
+    /// Unknown error. For example, this error may be returned when a [`ErrorStatus`]
     /// value received from another address space belongs to an error space
     /// that is not known in this address space. Also errors raised by APIs
     /// that do not return enough error information may be converted to this
     /// error.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  500 | Internal Server Error                               |
+    /// | gRPC    |    2 | Unknown                                             |
     Unknown(ErrorStatus),
+
+    /// The client specified an invalid argument.  Note that this differs
+    /// from [`Error::FailedPrecondition`].  [`Error::InvalidArgument`] indicates arguments
+    /// that are problematic regardless of the state of the system
+    /// (e.g., a malformed file name).
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  400 | Bad Request                                         |
+    /// | gRPC    |    3 | Invalid argument                                    |
+    InvalidArgument(ErrorStatus),
+
+    /// The deadline expired before the operation could complete. For operations
+    /// that change the state of the system, this error may be returned
+    /// even if the operation has completed successfully.  For example, a
+    /// successful response from a server could have been delayed long
+    /// enough for the deadline to expire.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  504 | Gateway Timeout                                     |
+    /// | gRPC    |    4 | Deadline exceeded                                   |
+    DeadlineExceeded(ErrorStatus),
+
+    /// Some requested entity (e.g., file or directory) was not found.
+    ///
+    /// Note to server developers: if a request is denied for an entire class
+    /// of users, such as gradual feature rollout or undocumented allowlist,
+    /// [`Error::NotFound`] may be used. If a request is denied for some users
+    /// within a class of users, such as user-based access control,
+    /// [`Error::PermissionDenied`] must be used.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  404 | Not Found                                           |
+    /// | gRPC    |    5 | Not found                                           |
+    NotFound(ErrorStatus),
+
+    /// The entity that a client attempted to create (e.g., file or directory)
+    /// already exists.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  409 | Conflict                                            |
+    /// | gRPC    |    6 | Already exists                                      |
+    AlreadyExists(ErrorStatus),
+
+    /// The caller does not have permission to execute the specified
+    /// operation. [`Error::PermissionDenied`] must not be used for rejections
+    /// caused by exhausting some resource (use [`Error::ResourceExhausted`]
+    /// instead for those errors). [`Error::PermissionDenied`] must not be
+    /// used if the caller can not be identified (use [`Error::Unauthenticated`]
+    /// instead for those errors). This error code does not imply the
+    /// request is valid or the requested entity exists or satisfies
+    /// other pre-conditions.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  403 | Forbidden                                           |
+    /// | gRPC    |    7 | Permission denied                                   |
+    PermissionDenied(ErrorStatus),
+
+    /// The request does not have valid authentication credentials for the
+    /// operation.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  401 | Unauthorized                                        |
+    /// | gRPC    |   16 | Permission denied                                   |
+    Unauthenticated(ErrorStatus),
+
+    /// Some resource has been exhausted, perhaps a per-user quota, or
+    /// perhaps the entire file system is out of space.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  429 | Too Many Requests                                   |
+    /// | gRPC    |    8 | Permission denied                                   |
+    ResourceExhausted(ErrorStatus),
+
+    /// The operation was rejected because the system is not in a state
+    /// required for the operation's execution.  For example, the directory
+    /// to be deleted is non-empty, an rmdir operation is applied to
+    /// a non-directory, etc.
+    ///
+    /// Service implementors can use the following guidelines to decide
+    /// between [`Error::FailedPrecondition`], [`Error::Aborted`], and
+    /// [`Error::Unavailable`]:
+    ///
+    ///  - Use [`Error::Unavailable`] if the client can retry just the failing
+    ///    call.
+    ///  - Use [`Error::Aborted`] if the client should retry at a higher level.
+    ///    For example, when a client-specified test-and-set fails, indicating
+    ///    the client should restart a read-modify-write sequence.
+    ///  - Use [`Error::FailedPrecondition`] if the client should not retry
+    ///    until the system state has been explicitly fixed. For example, if an
+    ///    "rmdir" fails because the directory is non-empty,
+    ///    [`Error::FailedPrecondition`] should be returned since the client
+    ///    should not retry unless the files are deleted from the directory.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  400 | Bad Request                                         |
+    /// | gRPC    |    9 | Failed precondition                                 |
+    FailedPrecondition(ErrorStatus),
+
+    /// The operation was aborted, typically due to a concurrency issue such as
+    /// a sequencer check failure or transaction abort.
+    ///
+    /// See the guidelines above for deciding between
+    /// [`Error::FailedPrecondition`], [`Error::Aborted`], and
+    /// [`Error::Unavailable`].
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  409 | Conflict                                            |
+    /// | gRPC    |   10 | Aborted                                             |
+    Aborted(ErrorStatus),
+
+    /// The operation was attempted past the valid range.  E.g., seeking or
+    /// reading past end-of-file.
+    ///
+    /// Unlike [`Error::InvalidArgument`], this error indicates a problem that
+    /// may be fixed if the system state changes. For example, a 32-bit file
+    /// system will generate [`Error::InvalidArgument`] if asked to read at an
+    /// offset that is not in the range [0,2^32-1], but it will generate
+    /// [`Error::OutOfRange`] if asked to read from an offset past the current
+    /// file size.
+    ///
+    /// There is a fair bit of overlap between [`Error::FailedPrecondition`] and
+    /// [`Error::OutOfRange`].  We recommend using [`Error::OutOfRange`] (the
+    /// more specific error) when it applies so that callers who are iterating
+    /// through a space can easily look for an [`Error::OutOfRange`] error to
+    /// detect when they are done.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  400 | Bad Request                                         |
+    /// | gRPC    |   11 | Out of range                                        |
+    OutOfRange(ErrorStatus),
+
+    /// The operation is not implemented or is not supported/enabled in this
+    /// service.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  501 | Not implemented                                     |
+    /// | gRPC    |   12 | Unimplemented                                       |
+    Unimplemented(ErrorStatus),
+
+    /// Internal errors.  This means that some invariants expected by the
+    /// underlying system have been broken.  This error code is reserved for
+    /// serious errors.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  500 | Internal Server Error                               |
+    /// | gRPC    |   13 | Internal                                            |
+    Internal(ErrorStatus),
+
+    /// The service is currently unavailable.  This is most likely a transient
+    /// condition, which can be corrected by retrying with
+    /// a backoff. Note that it is not always safe to retry
+    /// non-idempotent operations.
+    ///
+    /// See the guidelines above for deciding between
+    /// [`Error::FailedPrecondition`], [`Error::Aborted`], and
+    /// [`Error::Unavailable`].
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  503 | Service Unavailable                                 |
+    /// | gRPC    |   14 | Unavailable                                         |
+    Unavailable(ErrorStatus),
+
+    /// Unrecoverable data loss or corruption.
+    ///
+    /// | Mapping | Code | Description                                         |
+    /// | :------ | ---: | :-------------------------------------------------- |
+    /// | HTTP    |  500 | Internal Server Error                               |
+    /// | gRPC    |   15 | Data loss                                           |
+    DataLoss(ErrorStatus),
 }
 
 // TODO: Replace strum with a more detailed display implementation.
@@ -41,24 +254,165 @@ impl Error {
         match self {
             Error::Internal(status) => status,
             Error::Unknown(status) => status,
+            Error::Cancelled(status) => status,
+            Error::InvalidArgument(status) => status,
+            Error::DeadlineExceeded(status) => status,
+            Error::NotFound(status) => status,
+            Error::AlreadyExists(status) => status,
+            Error::PermissionDenied(status) => status,
+            Error::Unauthenticated(status) => status,
+            Error::ResourceExhausted(status) => status,
+            Error::FailedPrecondition(status) => status,
+            Error::Aborted(status) => status,
+            Error::OutOfRange(status) => status,
+            Error::Unimplemented(status) => status,
+            Error::Unavailable(status) => status,
+            Error::DataLoss(status) => status,
+        }
+    }
+}
+
+impl From<Error> for ErrorStatus {
+    fn from(value: Error) -> Self {
+        match value {
+            Error::Internal(status) => status,
+            Error::Unknown(status) => status,
+            Error::Cancelled(status) => status,
+            Error::InvalidArgument(status) => status,
+            Error::DeadlineExceeded(status) => status,
+            Error::NotFound(status) => status,
+            Error::AlreadyExists(status) => status,
+            Error::PermissionDenied(status) => status,
+            Error::Unauthenticated(status) => status,
+            Error::ResourceExhausted(status) => status,
+            Error::FailedPrecondition(status) => status,
+            Error::Aborted(status) => status,
+            Error::OutOfRange(status) => status,
+            Error::Unimplemented(status) => status,
+            Error::Unavailable(status) => status,
+            Error::DataLoss(status) => status,
+        }
+    }
+}
+
+impl Error {
+    /// Returns the gRPC code value.
+    ///
+    /// See https://github.com/googleapis/googleapis/blob/f36c65081b19e0758ef5696feca27c7dcee5475e/google/rpc/code.proto.
+    #[cfg(feature = "with-grpc")]
+    pub fn grpc_code(&self) -> i32 {
+        match self {
+            Error::Cancelled(_) => grpc_code::CANCELLED,
+            Error::Unknown(_) => grpc_code::UNKNOWN,
+            Error::InvalidArgument(_) => grpc_code::INVALID_ARGUMENT,
+            Error::DeadlineExceeded(_) => grpc_code::DEADLINE_EXCEEDED,
+            Error::NotFound(_) => grpc_code::NOT_FOUND,
+            Error::AlreadyExists(_) => grpc_code::ALREADY_EXISTS,
+            Error::PermissionDenied(_) => grpc_code::PERMISSION_DENIED,
+            Error::Unauthenticated(_) => grpc_code::UNAUTHENTICATED,
+            Error::ResourceExhausted(_) => grpc_code::RESOURCE_EXHAUSTED,
+            Error::FailedPrecondition(_) => grpc_code::FAILED_PRECONDITION,
+            Error::Aborted(_) => grpc_code::ABORTED,
+            Error::OutOfRange(_) => grpc_code::OUT_OF_RANGE,
+            Error::Unimplemented(_) => grpc_code::UNIMPLEMENTED,
+            Error::Internal(_) => grpc_code::INTERNAL,
+            Error::Unavailable(_) => grpc_code::UNAVAILABLE,
+            Error::DataLoss(_) => grpc_code::DATA_LOSS,
         }
     }
 
     // TODO: Build macros to automate building of the error helper functions.
 
-    pub fn internal<S: AsRef<str>>(message: S) -> Error {
-        Error::Internal(ErrorStatus::default().with_message(message))
+    pub fn cancelled<S: AsRef<str>>(message: S) -> Error {
+        Error::Cancelled(ErrorStatus::default().with_message(message))
     }
 
     pub fn unknown<S: AsRef<str>>(message: S) -> Error {
         Error::Unknown(ErrorStatus::default().with_message(message))
     }
 
+    pub fn invalid_argument<S: AsRef<str>>(message: S) -> Error {
+        Error::InvalidArgument(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn deadline_exceeded<S: AsRef<str>>(message: S) -> Error {
+        Error::DeadlineExceeded(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn not_found<S: AsRef<str>>(message: S) -> Error {
+        Error::NotFound(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn already_exists<S: AsRef<str>>(message: S) -> Error {
+        Error::AlreadyExists(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn permission_denied<S: AsRef<str>>(message: S) -> Error {
+        Error::PermissionDenied(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn unauthenticated<S: AsRef<str>>(message: S) -> Error {
+        Error::Unauthenticated(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn resource_exhausted<S: AsRef<str>>(message: S) -> Error {
+        Error::ResourceExhausted(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn failed_precondition<S: AsRef<str>>(message: S) -> Error {
+        Error::FailedPrecondition(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn aborted<S: AsRef<str>>(message: S) -> Error {
+        Error::Aborted(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn out_of_range<S: AsRef<str>>(message: S) -> Error {
+        Error::OutOfRange(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn unimplemented<S: AsRef<str>>(message: S) -> Error {
+        Error::Unimplemented(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn internal<S: AsRef<str>>(message: S) -> Error {
+        Error::Internal(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn unavailable<S: AsRef<str>>(message: S) -> Error {
+        Error::Unavailable(ErrorStatus::default().with_message(message))
+    }
+
+    pub fn data_loss<S: AsRef<str>>(message: S) -> Error {
+        Error::DataLoss(ErrorStatus::default().with_message(message))
+    }
+
     /// Appends a `ErrorDetails::DebugInfo` with info from `error`.
     pub fn with_error<E: fmt::Display>(self, error: E) -> Error {
         match self {
-            Error::Internal(details) => Error::Internal(details.with_error(error)),
+            Error::Cancelled(details) => Error::Cancelled(details.with_error(error)),
             Error::Unknown(details) => Error::Unknown(details.with_error(error)),
+            Error::InvalidArgument(details) => Error::InvalidArgument(details.with_error(error)),
+            Error::DeadlineExceeded(details) => Error::DeadlineExceeded(details.with_error(error)),
+            Error::NotFound(details) => Error::NotFound(details.with_error(error)),
+            Error::AlreadyExists(details) => Error::AlreadyExists(details.with_error(error)),
+            Error::PermissionDenied(details) => Error::PermissionDenied(details.with_error(error)),
+            Error::Unauthenticated(details) => Error::Unauthenticated(details.with_error(error)),
+            Error::ResourceExhausted(details) => {
+                Error::ResourceExhausted(details.with_error(error))
+            }
+            Error::FailedPrecondition(details) => {
+                Error::FailedPrecondition(details.with_error(error))
+            }
+            Error::Aborted(details) => Error::Aborted(details.with_error(error)),
+            Error::OutOfRange(details) => Error::OutOfRange(details.with_error(error)),
+            Error::Unimplemented(details) => Error::Unimplemented(details.with_error(error)),
+            Error::Internal(details) => Error::Internal(details.with_error(error)),
+            Error::Unavailable(details) => Error::Unavailable(details.with_error(error)),
+            Error::DataLoss(details) => Error::DataLoss(details.with_error(error)),
+        }
+    }
+}
         }
     }
 }
