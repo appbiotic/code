@@ -1,2 +1,5 @@
+clippy
 proto
 protobuf
+rustfmt
+rustup
