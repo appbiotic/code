@@ -1,4 +1,6 @@
 clippy
+errno
+multimap
 proto
 protobuf
 rustfmt
