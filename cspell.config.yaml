@@ -8,9 +8,13 @@ dictionaryDefinitions:
   - name: project-words
     path: '.cspell-words/project.txt'
     addWords: true
+  - name: terms
+    path: '.cspell-words/terms.txt'
+    addWords: true
 dictionaries:
   - external-words
   - project-words    
+  - terms
 ignorePaths:
  - '.cspell/*-words.txt'
  - '**/NOTICE'
