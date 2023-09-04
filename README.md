@@ -40,11 +40,14 @@ Bump version:
 
 Push and merge to main. Then tag:
 
-    git tag -s "cargo read-manifest | jq -r '"v" + .version'"
+    VERSION=$(cargo read-manifest | jq -r '"v" + .version'); \
+        git tag -s "$VERSION" && \
+        git tag -v "$VERSION" && \
+        git push origin "$VERSION"
 
 Publish:
 
-    cargo-release release publish --workspace --execute
+    cargo-release release publish --workspace --config .config/.cargo-release/release.toml --execute
 
 ## Contributing
 
