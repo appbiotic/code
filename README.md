@@ -38,6 +38,14 @@ Bump version:
 
     cargo-release release version patch --workspace --execute
 
+Push and merge to main. Then tag:
+
+    git tag -s "cargo read-manifest | jq -r '"v" + .version'"
+
+Publish:
+
+    cargo-release release publish --workspace --execute
+
 ## Contributing
 
 Please read the [contributing guide](CONTRIBUTING.md) for the latest contributing guidelines.
