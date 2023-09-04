@@ -1,0 +1,33 @@
+name: Start Release
+run-name: ${{ github.actor }} is is running Start Release 🚀
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: LEVEL
+        required: true
+        type: choice
+        options:
+        - major
+        - minor
+        - patch    
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/workflows/ci.yml
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --version 0.24.11 cargo-release 
+      - run: rustup component add clippy
+      - run: cargo-release release changes --config .config/.cargo-release/release.toml

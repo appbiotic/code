@@ -1,6 +1,8 @@
 name: CI
-run-name: ${{ github.actor }} is is running CI 🚀
-on: [push]
+run-name: ${{ github.actor }} is is running CI 🏗️
+on:
+  push:
+  workflow_call:
 env:
   CARGO_TERM_COLOR: always
 jobs:
