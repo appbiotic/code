@@ -13,12 +13,13 @@ Guiding principles, strive for as much as possible:
 
 - code readable
 - tools inspectable
-- builds hermetic
+- builds hermetic with minimal dependencies
 
 Meaning:
 
 - avoid macros
 - avoid non-hermetic generators such as Rust's `build.rs`
+- avoid tooling not installed by default in CI runner or any additional runtime
 
 ## Getting Started
 
