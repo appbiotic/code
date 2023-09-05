@@ -1,41 +1,17 @@
 
 [package]
-name = "appbiotic"
-version = "0.1.3"
+name = "appbiotic-code-cli"
+version = "0.1.4"
 edition = "2021"
-authors = [
-    "Kristopher Wuollett <kris@appbiotic.com>",
-]
-license = "MIT"
-description = "Tools to package to build services that can be managed similarly."
-homepage = "https://appbiotic.com/"
-repository = "https://github.com/appbiotic/code/"
-readme = "README.md"
-include = [
-    "src/**/*.rs",
-    "Cargo.lock",
-    "Cargo.toml",
-    "LICENSE",
-    "NOTICE",
-    "README.md",
-]
 
-# TODO: Find or create tool to propagte orthogonal `with-*` features.
 [features]
-full = [
-    "with-grpc",
-    "with-http",
-    "with-tonic",
+default = ["with-examples-greeter"]
+with-examples-greeter = [
+    "with-examples",
+    "appbiotic-examples-cli-cmd/with-greeter",
 ]
-with-grpc = [
-    "appbiotic-code-error/with-grpc",
-]
-with-http = [
-    "appbiotic-code-error/with-http",
-]
-with-tonic = [
-    "appbiotic-code-error/with-tonic",
-]
+with-examples = []
 
 [dependencies]
-appbiotic-code-error = { version = "0.1.3", path = "../error", default-features = false}
+appbiotic-examples-cli-cmd = { version = "0.1.0", path = "../../examples/cli-cmd", default-features = false, optional = true }
+clap = { version = "4.4.2", features = ["derive"] }

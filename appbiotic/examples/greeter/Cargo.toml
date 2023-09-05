@@ -1,0 +1,11 @@
+[package]
+name = "appbiotic-examples-greeter"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+with-cli-cmd = ["dep:clap", "clap/derive"]
+
+[dependencies]
+appbiotic-code-error = { version = "0.1.3", path = "../../code/error", default-features = false }
+clap = { version = "4.4.2", optional = true, default-features = false }
