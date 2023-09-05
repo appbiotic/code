@@ -36,6 +36,8 @@ mod grpc_code {
 
 // TODO: Find or create library for format and flow markdown comments.
 
+pub type Result<T> = std::result::Result<T, Error>;
+
 #[derive(Clone, Debug, IntoStaticStr)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum Error {
