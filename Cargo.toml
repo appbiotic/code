@@ -1,7 +1,11 @@
 [workspace]
 
+default-members = ["appbiotic/code/cli"]
+
 members = [ 
     "appbiotic/code/cli",
+    "appbiotic/examples/cli-cmd",
+    "appbiotic/examples/greeter",
     "appbiotic/code/error",
 ]
 
