@@ -69,7 +69,7 @@ dependencies = [
 name = "appbiotic-code-cli"
 version = "0.1.4"
 dependencies = [
- "appbiotic-examples-cli-cmd",
+ "appbiotic-examples",
  "clap",
 ]
 
@@ -85,15 +85,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "appbiotic-examples-cli-cmd"
-version = "0.1.0"
-dependencies = [
- "appbiotic-examples-greeter",
- "clap",
-]
-
-[[package]]
-name = "appbiotic-examples-greeter"
+name = "appbiotic-examples"
 version = "0.1.0"
 dependencies = [
  "appbiotic-code-error",

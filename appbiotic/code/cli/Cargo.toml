@@ -6,12 +6,9 @@ edition = "2021"
 
 [features]
 default = ["with-examples-greeter"]
-with-examples-greeter = [
-    "with-examples",
-    "appbiotic-examples-cli-cmd/with-greeter",
-]
-with-examples = []
+with-examples-greeter = ["with-examples", "appbiotic-examples/with-greeter"]
+with-examples = ["appbiotic-examples/with-cli-cmd"]
 
 [dependencies]
-appbiotic-examples-cli-cmd = { version = "0.1.0", path = "../../examples/cli-cmd", default-features = false, optional = true }
+appbiotic-examples = { version = "0.1.0", path = "../../examples", default-features = false, optional = true }
 clap = { version = "4.4.2", features = ["derive"] }
