@@ -2,6 +2,7 @@
 //!
 //! Appbiotic Code CLI is a tool to manage your coding projects.
 
+use appbiotic_examples::CliCmd;
 use clap::Parser;
 
 /// A tool to manage your coding projects.
@@ -9,13 +10,13 @@ use clap::Parser;
 struct Cli {
     #[cfg(feature = "with-examples")]
     #[command(subcommand)]
-    command: appbiotic_examples_cli_cmd::CliCmd,
+    command: CliCmd,
 }
 
 pub fn main() {
     let cli = Cli::parse();
     match &cli.command {
         #[cfg(feature = "with-examples-greeter")]
-        appbiotic_examples_cli_cmd::CliCmd::Greeter(cmd) => cmd.execute(),
+        CliCmd::Greeter(cmd) => cmd.execute(),
     }
 }
