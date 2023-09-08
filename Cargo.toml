@@ -2,6 +2,11 @@
 
 default-members = ["appbiotic/code/cli"]
 
-members = ["appbiotic/code/cli", "appbiotic/examples", "appbiotic/code/error"]
+members = [
+    "appbiotic/code/cli",
+    "appbiotic/code/runtime",
+    "appbiotic/examples",
+    "appbiotic/code/error",
+]
 
 resolver = "2"
