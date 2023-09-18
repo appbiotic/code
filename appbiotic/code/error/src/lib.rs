@@ -14,24 +14,24 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
-#[cfg(feature = "with-grpc")]
-mod grpc_code {
-    pub static CANCELLED: i32 = 1;
-    pub static UNKNOWN: i32 = 2;
-    pub static INVALID_ARGUMENT: i32 = 3;
-    pub static DEADLINE_EXCEEDED: i32 = 4;
-    pub static NOT_FOUND: i32 = 5;
-    pub static ALREADY_EXISTS: i32 = 6;
-    pub static PERMISSION_DENIED: i32 = 7;
-    pub static UNAUTHENTICATED: i32 = 16;
-    pub static RESOURCE_EXHAUSTED: i32 = 8;
-    pub static FAILED_PRECONDITION: i32 = 9;
-    pub static ABORTED: i32 = 10;
-    pub static OUT_OF_RANGE: i32 = 11;
-    pub static UNIMPLEMENTED: i32 = 12;
-    pub static INTERNAL: i32 = 13;
-    pub static UNAVAILABLE: i32 = 14;
-    pub static DATA_LOSS: i32 = 15;
+pub mod code {
+    pub const OK: i32 = 0;
+    pub const CANCELLED: i32 = 1;
+    pub const UNKNOWN: i32 = 2;
+    pub const INVALID_ARGUMENT: i32 = 3;
+    pub const DEADLINE_EXCEEDED: i32 = 4;
+    pub const NOT_FOUND: i32 = 5;
+    pub const ALREADY_EXISTS: i32 = 6;
+    pub const PERMISSION_DENIED: i32 = 7;
+    pub const UNAUTHENTICATED: i32 = 16;
+    pub const RESOURCE_EXHAUSTED: i32 = 8;
+    pub const FAILED_PRECONDITION: i32 = 9;
+    pub const ABORTED: i32 = 10;
+    pub const OUT_OF_RANGE: i32 = 11;
+    pub const UNIMPLEMENTED: i32 = 12;
+    pub const INTERNAL: i32 = 13;
+    pub const UNAVAILABLE: i32 = 14;
+    pub const DATA_LOSS: i32 = 15;
 }
 
 // TODO: Find or create library for format and flow markdown comments.
@@ -301,25 +301,24 @@ impl Error {
     /// Returns the gRPC code value.
     ///
     /// See https://github.com/googleapis/googleapis/blob/f36c65081b19e0758ef5696feca27c7dcee5475e/google/rpc/code.proto.
-    #[cfg(feature = "with-grpc")]
-    pub fn grpc_code(&self) -> i32 {
+    pub fn code(&self) -> i32 {
         match self {
-            Error::Cancelled(_) => grpc_code::CANCELLED,
-            Error::Unknown(_) => grpc_code::UNKNOWN,
-            Error::InvalidArgument(_) => grpc_code::INVALID_ARGUMENT,
-            Error::DeadlineExceeded(_) => grpc_code::DEADLINE_EXCEEDED,
-            Error::NotFound(_) => grpc_code::NOT_FOUND,
-            Error::AlreadyExists(_) => grpc_code::ALREADY_EXISTS,
-            Error::PermissionDenied(_) => grpc_code::PERMISSION_DENIED,
-            Error::Unauthenticated(_) => grpc_code::UNAUTHENTICATED,
-            Error::ResourceExhausted(_) => grpc_code::RESOURCE_EXHAUSTED,
-            Error::FailedPrecondition(_) => grpc_code::FAILED_PRECONDITION,
-            Error::Aborted(_) => grpc_code::ABORTED,
-            Error::OutOfRange(_) => grpc_code::OUT_OF_RANGE,
-            Error::Unimplemented(_) => grpc_code::UNIMPLEMENTED,
-            Error::Internal(_) => grpc_code::INTERNAL,
-            Error::Unavailable(_) => grpc_code::UNAVAILABLE,
-            Error::DataLoss(_) => grpc_code::DATA_LOSS,
+            Error::Cancelled(_) => code::CANCELLED,
+            Error::Unknown(_) => code::UNKNOWN,
+            Error::InvalidArgument(_) => code::INVALID_ARGUMENT,
+            Error::DeadlineExceeded(_) => code::DEADLINE_EXCEEDED,
+            Error::NotFound(_) => code::NOT_FOUND,
+            Error::AlreadyExists(_) => code::ALREADY_EXISTS,
+            Error::PermissionDenied(_) => code::PERMISSION_DENIED,
+            Error::Unauthenticated(_) => code::UNAUTHENTICATED,
+            Error::ResourceExhausted(_) => code::RESOURCE_EXHAUSTED,
+            Error::FailedPrecondition(_) => code::FAILED_PRECONDITION,
+            Error::Aborted(_) => code::ABORTED,
+            Error::OutOfRange(_) => code::OUT_OF_RANGE,
+            Error::Unimplemented(_) => code::UNIMPLEMENTED,
+            Error::Internal(_) => code::INTERNAL,
+            Error::Unavailable(_) => code::UNAVAILABLE,
+            Error::DataLoss(_) => code::DATA_LOSS,
         }
     }
 
@@ -598,7 +597,7 @@ pub enum ErrorDetails {
     /// which can be attached to an RPC error.
     LocalizedMessage {
         /// The locale used following the specification defined at
-        /// https://www.rfc-editor.org/rfc/bcp/bcp47.txt.
+        /// <https://www.rfc-editor.org/rfc/bcp/bcp47.txt>.
         /// Examples are: "en-US", "fr-CH", "es-MX"
         locale: String,
         /// The localized error message in the above locale.
@@ -726,6 +725,16 @@ impl fmt::Display for Property {
             Property::ArrayMember { name, index } => write!(f, r#"{}[{}]"#, name, index),
         }
     }
+}
+
+/// A request for inter-module communication.
+pub struct Request<T> {
+    pub message: T,
+}
+
+/// A response for inter-module communication.
+pub struct Response<T> {
+    pub message: T,
 }
 
 #[cfg(test)]
