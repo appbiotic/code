@@ -38,7 +38,7 @@ pub mod code {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-#[derive(Clone, Debug, IntoStaticStr)]
+#[derive(Clone, Debug, thiserror::Error, IntoStaticStr)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum Error {
     /// The operation was cancelled, typically by the caller.
