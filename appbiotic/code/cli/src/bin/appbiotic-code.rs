@@ -15,7 +15,7 @@ struct Cli {
 }
 
 pub fn main() {
-    appbiotic_code_runtime::init_telemetry();
+    appbiotic_code_runtime::init_telemetry(true);
     event!(Level::TRACE, "appbiotic_code_runtime telemetry initialized");
 
     let cli = Cli::parse();
