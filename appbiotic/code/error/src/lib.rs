@@ -728,12 +728,20 @@ impl fmt::Display for Property {
 }
 
 /// A request for inter-module communication.
-pub struct Request<T> {
+#[derive(Clone)]
+pub struct Request<T>
+where
+    T: Send,
+{
     pub message: T,
 }
 
 /// A response for inter-module communication.
-pub struct Response<T> {
+#[derive(Clone)]
+pub struct Response<T>
+where
+    T: Send,
+{
     pub message: T,
 }
 
