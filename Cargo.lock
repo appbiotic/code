@@ -76,7 +76,7 @@ dependencies = [
 
 [[package]]
 name = "appbiotic-code-cli"
-version = "0.1.4"
+version = "0.2.0"
 dependencies = [
  "appbiotic-code-runtime",
  "appbiotic-examples",
@@ -97,7 +97,7 @@ dependencies = [
 
 [[package]]
 name = "appbiotic-code-runtime"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "tracing",
  "tracing-subscriber",
@@ -105,7 +105,7 @@ dependencies = [
 
 [[package]]
 name = "appbiotic-examples"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "appbiotic-code-error",
  "clap",
