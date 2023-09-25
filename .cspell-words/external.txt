@@ -5,3 +5,4 @@ proto
 protobuf
 rustfmt
 rustup
+thiserror
