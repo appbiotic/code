@@ -1,6 +1,6 @@
 [package]
 name = "appbiotic-examples"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 [features]
@@ -8,5 +8,5 @@ with-cli-cmd = ["dep:clap", "clap/derive"]
 with-greeter = []
 
 [dependencies]
-appbiotic-code-error = { version = "0.2.0", path = "../code/error", default-features = false }
-clap = { version = "4.4.2", optional = true, default-features = false }
+appbiotic-code-error = { workspace = true }
+clap = { workspace = true, optional = true }

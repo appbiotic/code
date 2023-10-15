@@ -1,6 +1,6 @@
 [package]
 name = "appbiotic-code-error"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Kristopher Wuollett <kris@appbiotic.com>"]
 license = "Apache-2.0"
@@ -11,11 +11,9 @@ readme = "README.md"
 
 [features]
 with-http = ["dep:http"]
-with-tonic = ["dep:tonic"]
 
 [dependencies]
-http = { version = "0.2.9", optional = true, default-features = false }
-strum = "0.25"
-strum_macros = "0.25"
-thiserror = "1.0.48"
-tonic = { version = "0.10.0", optional = true, default-features = false }
+http = { workspace = true, optional = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+thiserror = { workspace = true }

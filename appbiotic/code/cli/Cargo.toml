@@ -1,16 +1,16 @@
 
 [package]
 name = "appbiotic-code-cli"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 [features]
 default = ["with-examples-greeter"]
-with-examples-greeter = ["with-examples", "appbiotic-examples/with-greeter"]
 with-examples = ["appbiotic-examples/with-cli-cmd"]
+with-examples-greeter = ["with-examples", "appbiotic-examples/with-greeter"]
 
 [dependencies]
-appbiotic-code-runtime = { version = "0.2.0", path = "../runtime", default-features = false }
-appbiotic-examples = { version = "0.2.0", path = "../../examples", default-features = false, optional = true }
-clap = { version = "4.4.2", features = ["derive"] }
-tracing = "0.1.37"
+appbiotic-code-runtime = { workspace = true }
+appbiotic-examples = { workspace = true, optional = true }
+clap = { workspace = true, features = ["derive", "std"] }
+tracing = { workspace = true }
