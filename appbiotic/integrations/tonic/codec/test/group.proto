@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package appbiotic.integrations.tonic.codec.test;
+
+import "appbiotic/integrations/tonic/codec/test/account.proto";
+
+message Group {
+    string name = 1;
+    repeated Member members = 2;
+    repeated Group sub_groups = 3;
+}
+
+message Member {
+    string id = 1;
+
+    message ServiceAccount {
+        string uri = 1;
+    }
+
+    oneof kind {
+        appbiotic.integrations.tonic.codec.test.Account account = 2;
+        ServiceAccount service_account = 3; 
+    }
+}
