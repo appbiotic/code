@@ -16,7 +16,7 @@ appbiotic-code-cli = { version = "0.3.0", path = "appbiotic/code/cli", default-f
 appbiotic-code-error = { version = "0.3.0", path = "appbiotic/code/error", default-features = false }
 appbiotic-code-runtime = { version = "0.3.0", path = "appbiotic/code/runtime", default-features = false }
 appbiotic-examples = { version = "0.3.0", path = "appbiotic/examples", default-features = false }
-clap = { version = "4.4.6", default-features = false }
+clap = { version = "4.4.7", default-features = false }
 http = { version = "0.2.9", default-features = false }
 strum = { version = "0.25.0", default-features = false }
 strum_macros = { version = "0.25.3", default-features = false }
