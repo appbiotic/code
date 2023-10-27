@@ -19,7 +19,7 @@ appbiotic-examples = { version = "0.3.0", path = "appbiotic/examples", default-f
 clap = { version = "4.4.6", default-features = false }
 http = { version = "0.2.9", default-features = false }
 strum = { version = "0.25.0", default-features = false }
-strum_macros = { version = "0.25.2", default-features = false }
-thiserror = { version = "1.0.49", default-features = false }
-tracing = { version = "0.1.39", default-features = false }
+strum_macros = { version = "0.25.3", default-features = false }
+thiserror = { version = "1.0.50", default-features = false }
+tracing = { version = "0.1.40", default-features = false }
 tracing-subscriber = { version = "0.3.17", default-features = false }
