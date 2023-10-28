@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package appbiotic.integrations.tonic.codec.test;
+
+import "appbiotic/integrations/tonic/codec/test/color/themes.proto";
+
+message Account {
+    // string email = 1;
+    // oneof color_theme {
+    //     appbiotic.integrations.tonic.codec.test.color.SystemColorTheme system = 2;
+    //     string custom_uri = 3;
+    // }
+    appbiotic.integrations.tonic.codec.test.color.CustomColorTheme default_theme = 4;
+}

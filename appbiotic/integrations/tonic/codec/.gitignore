@@ -1,0 +1,2 @@
+src/test_pb/**/*.rs
+!src/test_pb/**/mod.rs

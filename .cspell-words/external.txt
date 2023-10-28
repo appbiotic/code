@@ -1,7 +1,9 @@
+bazel
 clippy
 errno
 multimap
 proto
+protoc
 protobuf
 rustfmt
 rustup

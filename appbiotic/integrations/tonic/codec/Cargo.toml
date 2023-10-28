@@ -1,0 +1,14 @@
+[package]
+name = "appbiotic-integrations-tonic-codec"
+version = "0.3.0"
+edition = "2021"
+
+[dependencies]
+bytes = { workspace = true, features = ["std"] }
+protobuf = { workspace = true, features = ["with-bytes"] }
+thiserror = { workspace = true }
+tonic = { workspace = true }
+
+[build-dependencies]
+anyhow = { workspace = true }
+protobuf-codegen = { workspace = true }

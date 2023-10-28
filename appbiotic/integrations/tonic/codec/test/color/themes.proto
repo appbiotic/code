@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package appbiotic.integrations.tonic.codec.test.color;
+
+enum SystemColorTheme {
+    SYSTEM_COLOR_THEME_UNKNOWN = 0;
+    SYSTEM_COLOR_THEME_LIGHT = 1;
+    SYSTEM_COLOR_THEME_DARK = 2;
+}
+
+message CustomColorTheme {
+    string name = 1;
+}
