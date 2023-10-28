@@ -33,6 +33,9 @@ fn main() -> Result<(), anyhow::Error> {
     codegen.out_dir(out_dir);
     codegen.customize(
         Customize::default()
+            // .log_file(
+            //     "/Users/kris/Code/kriswuollett/appbiotic-code-tonic-codecs/log.json".to_owned(),
+            // )
             .gen_mod_rs_hierarchy_out_dir_mod_name("test_pb".to_owned())
             .gen_mod_rs(false),
     );
