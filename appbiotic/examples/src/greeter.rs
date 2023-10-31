@@ -1,30 +1,30 @@
-//! # appbiotic-examples-cli-cmd
+//! # appbiotic-examples-greeter
 //!
 //! A collection of example greetings functionality.
 
-#[cfg(feature = "with-cli-cmd")]
-pub mod cli_cmd {
+#[cfg(feature = "commands")]
+pub mod commands {
+    use clap::{Args, Subcommand};
 
     /// Generate friendly greetings
-    #[derive(clap::Subcommand)]
+    #[derive(Debug, Subcommand)]
     pub enum CliCmd {
         /// Prints greeting
         GetGreeting(GetGreetingArgs),
     }
 
-    #[cfg(feature = "with-cli-cmd")]
     impl CliCmd {
-        pub fn execute(&self) {
+        pub fn execute(&self) -> anyhow::Result<()> {
             match &self {
                 Self::GetGreeting(args) => {
-                    println!("{}", crate::greeter::get_greeting(args.name.as_deref()))
+                    println!("{}", crate::greeter::get_greeting(args.name.as_deref()));
+                    Ok(())
                 }
             }
         }
     }
 
-    #[cfg(feature = "with-cli-cmd")]
-    #[derive(clap::Args)]
+    #[derive(Debug, Args)]
     pub struct GetGreetingArgs {
         /// The greeting recipient name
         name: Option<String>,
