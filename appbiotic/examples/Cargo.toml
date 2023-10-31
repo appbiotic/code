@@ -4,10 +4,11 @@ version = "0.3.0-alpha.0"
 edition = "2021"
 
 [features]
-default = ["with-cli-cmd", "with-greeter"]
-with-cli-cmd = ["clap/derive", "clap/std"]
-with-greeter = []
+commands = ["anyhow", "clap/derive", "clap/std", "thiserror"]
+appbiotic-examples-greeter = []
 
 [dependencies]
+anyhow = { workspace = true, optional = true }
 appbiotic-code-error = { workspace = true }
 clap = { workspace = true, optional = true }
+thiserror = { workspace = true, optional = true }

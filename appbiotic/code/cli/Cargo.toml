@@ -5,12 +5,16 @@ version = "0.3.0-alpha.0"
 edition = "2021"
 
 [features]
-default = ["with-examples-greeter"]
-with-examples = ["appbiotic-examples/with-cli-cmd"]
-with-examples-greeter = ["with-examples", "appbiotic-examples/with-greeter"]
+default = ["appbiotic-examples-greeter"]
+appbiotic-examples = ["appbiotic-examples/commands"]
+appbiotic-examples-greeter = [
+    "appbiotic-examples",
+    "appbiotic-examples/appbiotic-examples-greeter",
+]
 
 [dependencies]
+anyhow = { workspace = true }
 appbiotic-code-runtime = { workspace = true }
 appbiotic-examples = { workspace = true, optional = true }
-clap = { workspace = true, features = ["derive", "std"] }
+clap = { workspace = true, features = ["derive", "help", "std", "usage"] }
 tracing = { workspace = true }

@@ -2,14 +2,27 @@
 //!
 //! A collection of example services
 
-#[cfg(feature = "with-greeter")]
+/// Example commands
+#[cfg(feature = "appbiotic-examples-greeter")]
 pub mod greeter;
 
-/// Example commands
-#[cfg(feature = "with-cli-cmd")]
-#[derive(clap::Subcommand)]
-pub enum CliCmd {
-    #[cfg(feature = "with-greeter")]
-    #[command(subcommand)]
-    Greeter(crate::greeter::cli_cmd::CliCmd),
+#[cfg(feature = "commands")]
+pub mod commands {
+    use clap::Subcommand;
+
+    #[derive(Debug, Subcommand)]
+    pub enum CliCmd {
+        #[cfg(feature = "appbiotic-examples-greeter")]
+        #[command(subcommand)]
+        Greeter(crate::greeter::commands::CliCmd),
+    }
+
+    impl CliCmd {
+        pub fn execute(&self) -> anyhow::Result<()> {
+            match self {
+                #[cfg(feature = "appbiotic-examples-greeter")]
+                Self::Greeter(cmd) => cmd.execute(),
+            }
+        }
+    }
 }

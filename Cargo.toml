@@ -12,6 +12,7 @@ members = [
 ]
 
 [workspace.dependencies]
+anyhow = { version = "1.0.75", default-features = false }
 appbiotic-code-cli = { version = "0.3.0-alpha.0", path = "appbiotic/code/cli", default-features = false }
 appbiotic-code-error = { version = "0.3.0-alpha.0", path = "appbiotic/code/error", default-features = false }
 appbiotic-code-runtime = { version = "0.3.0-alpha.0", path = "appbiotic/code/runtime", default-features = false }
