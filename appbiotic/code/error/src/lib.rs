@@ -324,67 +324,77 @@ impl Error {
 
     // TODO: Build macros to automate building of the error helper functions.
 
-    pub fn cancelled<S: AsRef<str>>(message: S) -> Error {
+    pub fn cancelled(message: Option<String>) -> Error {
         Error::Cancelled(ErrorStatus::default().with_message(message))
     }
 
-    pub fn unknown<S: AsRef<str>>(message: S) -> Error {
+    pub fn unknown(message: Option<String>) -> Error {
         Error::Unknown(ErrorStatus::default().with_message(message))
     }
 
-    pub fn invalid_argument<S: AsRef<str>>(message: S) -> Error {
+    pub fn invalid_argument(message: Option<String>) -> Error {
         Error::InvalidArgument(ErrorStatus::default().with_message(message))
     }
 
-    pub fn deadline_exceeded<S: AsRef<str>>(message: S) -> Error {
+    pub fn invalid_argument_field(
+        message: Option<String>,
+        name: String,
+        description: Option<String>,
+    ) -> Error {
+        Error::InvalidArgument(ErrorStatus::default().with_message(message).with_details(
+            ErrorDetails::bad_request(FieldViolation::for_member(name, description)),
+        ))
+    }
+
+    pub fn deadline_exceeded(message: Option<String>) -> Error {
         Error::DeadlineExceeded(ErrorStatus::default().with_message(message))
     }
 
-    pub fn not_found<S: AsRef<str>>(message: S) -> Error {
+    pub fn not_found(message: Option<String>) -> Error {
         Error::NotFound(ErrorStatus::default().with_message(message))
     }
 
-    pub fn already_exists<S: AsRef<str>>(message: S) -> Error {
+    pub fn already_exists(message: Option<String>) -> Error {
         Error::AlreadyExists(ErrorStatus::default().with_message(message))
     }
 
-    pub fn permission_denied<S: AsRef<str>>(message: S) -> Error {
+    pub fn permission_denied(message: Option<String>) -> Error {
         Error::PermissionDenied(ErrorStatus::default().with_message(message))
     }
 
-    pub fn unauthenticated<S: AsRef<str>>(message: S) -> Error {
+    pub fn unauthenticated(message: Option<String>) -> Error {
         Error::Unauthenticated(ErrorStatus::default().with_message(message))
     }
 
-    pub fn resource_exhausted<S: AsRef<str>>(message: S) -> Error {
+    pub fn resource_exhausted(message: Option<String>) -> Error {
         Error::ResourceExhausted(ErrorStatus::default().with_message(message))
     }
 
-    pub fn failed_precondition<S: AsRef<str>>(message: S) -> Error {
+    pub fn failed_precondition(message: Option<String>) -> Error {
         Error::FailedPrecondition(ErrorStatus::default().with_message(message))
     }
 
-    pub fn aborted<S: AsRef<str>>(message: S) -> Error {
+    pub fn aborted(message: Option<String>) -> Error {
         Error::Aborted(ErrorStatus::default().with_message(message))
     }
 
-    pub fn out_of_range<S: AsRef<str>>(message: S) -> Error {
+    pub fn out_of_range(message: Option<String>) -> Error {
         Error::OutOfRange(ErrorStatus::default().with_message(message))
     }
 
-    pub fn unimplemented<S: AsRef<str>>(message: S) -> Error {
+    pub fn unimplemented(message: Option<String>) -> Error {
         Error::Unimplemented(ErrorStatus::default().with_message(message))
     }
 
-    pub fn internal<S: AsRef<str>>(message: S) -> Error {
+    pub fn internal(message: Option<String>) -> Error {
         Error::Internal(ErrorStatus::default().with_message(message))
     }
 
-    pub fn unavailable<S: AsRef<str>>(message: S) -> Error {
+    pub fn unavailable(message: Option<String>) -> Error {
         Error::Unavailable(ErrorStatus::default().with_message(message))
     }
 
-    pub fn data_loss<S: AsRef<str>>(message: S) -> Error {
+    pub fn data_loss(message: Option<String>) -> Error {
         Error::DataLoss(ErrorStatus::default().with_message(message))
     }
 
@@ -552,23 +562,27 @@ pub struct ErrorStatus {
 }
 
 impl ErrorStatus {
-    pub fn with_message<M: AsRef<str>>(self, message: M) -> Self {
+    pub fn with_message(self, message: Option<String>) -> Self {
         ErrorStatus {
-            message: Some(message.as_ref().to_owned()),
+            message,
             details: self.details,
         }
     }
 
+    pub fn with_details(self, details: ErrorDetails) -> Self {
+        let mut new_details = self.details.unwrap_or_default();
+        new_details.push(details);
+        Self {
+            message: self.message,
+            details: Some(new_details),
+        }
+    }
+
     pub fn with_error<E: fmt::Display>(self, error: E) -> Self {
-        let mut details = self.details.unwrap_or_default();
-        details.push(ErrorDetails::DebugInfo {
+        self.with_details(ErrorDetails::DebugInfo {
             stack_entries: None,
             detail: Some(error.to_string()),
-        });
-        ErrorStatus {
-            message: self.message,
-            details: Some(details),
-        }
+        })
     }
 }
 
@@ -680,6 +694,15 @@ pub struct FieldViolation {
     pub description: Option<String>,
 }
 
+impl FieldViolation {
+    pub fn for_member(name: String, description: Option<String>) -> Self {
+        Self {
+            field: Field::new(Property::Member { name }),
+            description,
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Field {
     path_reversed: Vec<Property>,
@@ -690,6 +713,12 @@ impl Field {
         Field {
             path_reversed: vec![property],
         }
+    }
+
+    pub fn member<N: AsRef<str>>(name: N) -> Self {
+        Self::new(Property::Member {
+            name: name.as_ref().to_string(),
+        })
     }
 
     pub fn with_context(mut self, context: Property) -> Self {
@@ -751,7 +780,8 @@ mod tests {
 
     #[test]
     fn error_display() {
-        let error = Error::internal("Something bad happened").with_error("Invalid operation");
+        let error = Error::internal(Some("Something bad happened".to_string()))
+            .with_error("Invalid operation");
         assert_eq!(error.to_string(), "INTERNAL");
         assert!(error
             .inner()
