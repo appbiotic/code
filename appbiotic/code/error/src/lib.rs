@@ -14,6 +14,9 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
+#[cfg(feature = "safer-ffi")]
+pub mod ffi;
+
 pub mod code {
     pub const OK: i32 = 0;
     pub const CANCELLED: i32 = 1;

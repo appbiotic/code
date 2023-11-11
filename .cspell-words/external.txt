@@ -3,6 +3,7 @@ errno
 multimap
 proto
 protobuf
+repr
 rustfmt
 rustup
 thiserror
