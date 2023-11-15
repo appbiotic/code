@@ -20,6 +20,8 @@ appbiotic-examples = { version = "0.3.0-alpha.1", path = "appbiotic/examples", d
 clap = { version = "4.4.6", default-features = false }
 http = { version = "0.2.9", default-features = false }
 safer-ffi = { version = "0.1.4" }
+serde = { version = "1.0.190", default-features = false }
+serde_json = { version = "1.0.108", default-features = false }
 strum = { version = "0.25.0", default-features = false }
 strum_macros = { version = "0.25.2", default-features = false }
 thiserror = { version = "1.0.49", default-features = false }

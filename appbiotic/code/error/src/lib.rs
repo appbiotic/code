@@ -41,8 +41,11 @@ pub mod code {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+// TODO: Add serde deserializer for Error and related types.
+
 #[derive(Clone, Debug, thiserror::Error, IntoStaticStr)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[cfg_attr(feature = "json", derive(serde::Serialize))]
 pub enum Error {
     /// The operation was cancelled, typically by the caller.
     ///
@@ -554,6 +557,7 @@ impl TryFrom<tonic::Status> for Error {
 /// You can find out more about this error model and how to work with it in the
 /// [API Design Guide](https://cloud.google.com/apis/design/errors).
 #[derive(Clone, Debug, Default)]
+#[cfg_attr(feature = "json", derive(serde::Serialize))]
 pub struct ErrorStatus {
     /// A developer-facing error message, which should be in English. Any
     /// user-facing error message should be localized and sent in the
@@ -596,6 +600,7 @@ impl ErrorStatus {
 /// https://github.com/googleapis/googleapis/blob/f36c65081b19e0758ef5696feca27c7dcee5475e/google/rpc/error_details.proto.
 #[derive(Clone, Debug, IntoStaticStr)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[cfg_attr(feature = "json", derive(serde::Serialize))]
 pub enum ErrorDetails {
     /// Describes violations in a client request. This error type focuses on the
     /// syntactic aspects of the request.    
@@ -653,6 +658,7 @@ impl fmt::Display for ErrorDetails {
 
 /// A message type used to describe a single bad request field.
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "json", derive(serde::Serialize))]
 pub struct FieldViolation {
     /// A path that leads to a field in the request body. The value will be a
     /// sequence of dot-separated identifiers that identify a protocol buffer
@@ -709,6 +715,16 @@ impl FieldViolation {
 #[derive(Clone, Debug)]
 pub struct Field {
     path_reversed: Vec<Property>,
+}
+
+#[cfg(feature = "json")]
+impl serde::Serialize for Field {
+    fn serialize<S>(&self, serializer: S) -> std::prelude::v1::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
 }
 
 impl Field {
@@ -839,5 +855,15 @@ mod tests {
             argument.to_string().as_str(),
             r#"family.children[3].nicknames["joe"]"#
         );
+    }
+
+    #[test]
+    fn field_serialize_json() {
+        let field = Field::member("config").with_context(Property::Member {
+            name: "server".to_owned(),
+        });
+        let value = serde_json::to_value(field).expect("json value");
+        let value_as_str = value.as_str().expect("str value");
+        assert_eq!(value_as_str, "server.config");
     }
 }
