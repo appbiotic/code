@@ -2,6 +2,7 @@ clippy
 errno
 multimap
 proto
+protos
 protobuf
 repr
 rustfmt

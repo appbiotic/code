@@ -39,8 +39,6 @@ pub mod code {
 
 // TODO: Find or create library for format and flow markdown comments.
 
-pub type Result<T> = std::result::Result<T, Error>;
-
 // TODO: Add serde deserializer for Error and related types.
 
 #[derive(Clone, Debug, thiserror::Error, IntoStaticStr)]
@@ -352,6 +350,20 @@ impl Error {
         ))
     }
 
+    pub fn invalid_argument_field_name<N: AsRef<str>, D: AsRef<str>>(
+        name: N,
+        description: D,
+    ) -> Error {
+        Error::InvalidArgument(
+            ErrorStatus::default().with_details(ErrorDetails::bad_request(
+                FieldViolation::for_member(
+                    name.as_ref().to_owned(),
+                    Some(description.as_ref().to_owned()),
+                ),
+            )),
+        )
+    }
+
     pub fn deadline_exceeded(message: Option<String>) -> Error {
         Error::DeadlineExceeded(ErrorStatus::default().with_message(message))
     }
@@ -458,10 +470,10 @@ impl From<Error> for http::StatusCode {
 }
 
 // TODO: Properly map error details into a tonic Status.
-#[cfg(feature = "with-tonic")]
-impl Error {
-    pub fn into_tonic_status(self) -> tonic::Status {
-        match self {
+#[cfg(feature = "protos")]
+impl From<Error> for tonic::Status {
+    fn from(value: Error) -> Self {
+        match value {
             Error::Internal(status) => {
                 tonic::Status::new(tonic::Code::Internal, status.message.unwrap_or_default())
             }
@@ -522,29 +534,47 @@ impl Error {
     }
 }
 
-#[cfg(feature = "with-tonic")]
+#[cfg(feature = "protos")]
 impl TryFrom<tonic::Status> for Error {
     type Error = Error;
 
-    fn try_from(value: tonic::Status) -> Result<Self, Self::Error> {
+    fn try_from(value: tonic::Status) -> std::result::Result<Self, Self::Error> {
         match value.code() {
-            tonic::Code::Ok => Err(Error::invalid_argument("Cannot convert OK status to Error")),
-            tonic::Code::Cancelled => Ok(Error::cancelled(value.message())),
-            tonic::Code::Unknown => Ok(Error::unknown(value.message())),
-            tonic::Code::InvalidArgument => Ok(Error::invalid_argument(value.message())),
-            tonic::Code::DeadlineExceeded => Ok(Error::deadline_exceeded(value.message())),
-            tonic::Code::NotFound => Ok(Error::not_found(value.message())),
-            tonic::Code::AlreadyExists => Ok(Error::already_exists(value.message())),
-            tonic::Code::PermissionDenied => Ok(Error::permission_denied(value.message())),
-            tonic::Code::ResourceExhausted => Ok(Error::resource_exhausted(value.message())),
-            tonic::Code::FailedPrecondition => Ok(Error::failed_precondition(value.message())),
-            tonic::Code::Aborted => Ok(Error::aborted(value.message())),
-            tonic::Code::OutOfRange => Ok(Error::out_of_range(value.message())),
-            tonic::Code::Unimplemented => Ok(Error::unimplemented(value.message())),
-            tonic::Code::Internal => Ok(Error::internal(value.message())),
-            tonic::Code::Unavailable => Ok(Error::unavailable(value.message())),
-            tonic::Code::DataLoss => Ok(Error::data_loss(value.message())),
-            tonic::Code::Unauthenticated => Ok(Error::unauthenticated(value.message())),
+            tonic::Code::Ok => Err(Error::invalid_argument(Some(
+                "Cannot convert OK status to Error".to_owned(),
+            ))),
+            tonic::Code::Cancelled => Ok(Error::cancelled(Some(value.message().to_owned()))),
+            tonic::Code::Unknown => Ok(Error::unknown(Some(value.message().to_owned()))),
+            tonic::Code::InvalidArgument => {
+                Ok(Error::invalid_argument(Some(value.message().to_owned())))
+            }
+            tonic::Code::DeadlineExceeded => {
+                Ok(Error::deadline_exceeded(Some(value.message().to_owned())))
+            }
+            tonic::Code::NotFound => Ok(Error::not_found(Some(value.message().to_owned()))),
+            tonic::Code::AlreadyExists => {
+                Ok(Error::already_exists(Some(value.message().to_owned())))
+            }
+            tonic::Code::PermissionDenied => {
+                Ok(Error::permission_denied(Some(value.message().to_owned())))
+            }
+            tonic::Code::ResourceExhausted => {
+                Ok(Error::resource_exhausted(Some(value.message().to_owned())))
+            }
+            tonic::Code::FailedPrecondition => {
+                Ok(Error::failed_precondition(Some(value.message().to_owned())))
+            }
+            tonic::Code::Aborted => Ok(Error::aborted(Some(value.message().to_owned()))),
+            tonic::Code::OutOfRange => Ok(Error::out_of_range(Some(value.message().to_owned()))),
+            tonic::Code::Unimplemented => {
+                Ok(Error::unimplemented(Some(value.message().to_owned())))
+            }
+            tonic::Code::Internal => Ok(Error::internal(Some(value.message().to_owned()))),
+            tonic::Code::Unavailable => Ok(Error::unavailable(Some(value.message().to_owned()))),
+            tonic::Code::DataLoss => Ok(Error::data_loss(Some(value.message().to_owned()))),
+            tonic::Code::Unauthenticated => {
+                Ok(Error::unauthenticated(Some(value.message().to_owned())))
+            }
         }
     }
 }
@@ -740,9 +770,45 @@ impl Field {
         })
     }
 
+    pub fn array_member<N: AsRef<str>>(name: N, index: usize) -> Self {
+        Self::new(Property::ArrayMember {
+            name: name.as_ref().to_string(),
+            index,
+        })
+    }
+
     pub fn with_context(mut self, context: Property) -> Self {
         self.path_reversed.push(context);
         self
+    }
+
+    pub fn within_member<M: AsRef<str>>(self, name: M) -> Self {
+        self.with_context(Property::Member {
+            name: name.as_ref().to_owned(),
+        })
+    }
+
+    pub fn within_array_member<M: AsRef<str>>(self, name: M, index: usize) -> Self {
+        self.with_context(Property::ArrayMember {
+            name: name.as_ref().to_owned(),
+            index,
+        })
+    }
+
+    pub fn invalid_argument<M: AsRef<str>, D: AsRef<str>>(
+        self,
+        message: M,
+        description: D,
+    ) -> Error {
+        Error::InvalidArgument(ErrorStatus {
+            message: Some(message.as_ref().to_owned()),
+            details: Some(vec![ErrorDetails::BadRequest {
+                field_violations: vec![FieldViolation {
+                    field: self,
+                    description: Some(description.as_ref().to_owned()),
+                }],
+            }]),
+        })
     }
 }
 
@@ -782,6 +848,31 @@ where
     T: Send,
 {
     pub message: T,
+}
+
+impl<T> Request<T>
+where
+    T: Send,
+{
+    pub fn new(message: T) -> Self {
+        Self { message }
+    }
+}
+
+#[cfg(feature = "protos")]
+impl<T, U> TryFrom<tonic::Request<T>> for Request<U>
+where
+    T: Send,
+    U: Send,
+    U: TryFrom<T>,
+{
+    type Error = U::Error;
+
+    fn try_from(value: tonic::Request<T>) -> Result<Self, Self::Error> {
+        Ok(Request {
+            message: value.into_inner().try_into()?,
+        })
+    }
 }
 
 /// A response for inter-module communication.

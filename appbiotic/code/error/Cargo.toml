@@ -13,6 +13,7 @@ readme = "README.md"
 json = ["serde/derive", "serde/std", "serde_json/std"]
 with-http = ["dep:http"]
 safer-ffi = ["dep:safer-ffi"]
+protos = ["dep:tonic"]
 
 [dependencies]
 http = { workspace = true, optional = true }
@@ -22,3 +23,4 @@ serde_json = { workspace = true, optional = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
 thiserror = { workspace = true }
+tonic = { workspace = true, optional = true }
