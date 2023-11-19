@@ -949,6 +949,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "json")]
     fn field_serialize_json() {
         let field = Field::member("config").with_context(Property::Member {
             name: "server".to_owned(),

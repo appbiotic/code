@@ -5,7 +5,7 @@ version = "0.3.0-alpha.1"
 edition = "2021"
 
 [features]
-default = ["appbiotic-examples-greeter", "json"]
+default = ["appbiotic-examples-greeter"]
 appbiotic-examples = ["appbiotic-examples/commands"]
 appbiotic-examples-greeter = [
     "appbiotic-examples",

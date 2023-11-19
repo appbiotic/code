@@ -28,3 +28,19 @@ thiserror = { version = "1.0.49", default-features = false }
 tonic = { version = "0.10.2", default-features = false }
 tracing = { version = "0.1.39", default-features = false }
 tracing-subscriber = { version = "0.3.17", default-features = false }
+
+[workspace.metadata]
+
+[[solutions]]
+name = "appbiotic-code-cli"
+default-members = ["appbiotic/code/cli"]
+default-features = ["appbiotic-examples-greeter"]
+
+[[solutions]]
+name = "appbiotic-examples"
+default-members = ["appbiotic/examples"]
+
+[[solutions]]
+name = "appbiotic-code-error-all"
+default-members = ["appbiotic/code/error"]
+default-features = ["json"]
