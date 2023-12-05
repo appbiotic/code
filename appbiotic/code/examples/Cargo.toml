@@ -1,11 +1,11 @@
 [package]
-name = "appbiotic-examples"
+name = "appbiotic-code-examples"
 version = "0.3.0-alpha.1"
 edition = "2021"
 
 [features]
 commands = ["anyhow", "clap/derive", "clap/std", "thiserror"]
-appbiotic-examples-greeter = []
+appbiotic-code-examples-greeter = []
 
 [dependencies]
 anyhow = { workspace = true, optional = true }

@@ -1,4 +1,4 @@
-//! # appbiotic-examples-greeter
+//! # appbiotic-code-examples-greeter
 //!
 //! A collection of example greetings functionality.
 

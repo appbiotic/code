@@ -5,11 +5,11 @@ version = "0.3.0-alpha.1"
 edition = "2021"
 
 [features]
-default = ["appbiotic-examples-greeter"]
-appbiotic-examples = ["appbiotic-examples/commands"]
-appbiotic-examples-greeter = [
-    "appbiotic-examples",
-    "appbiotic-examples/appbiotic-examples-greeter",
+default = ["appbiotic-code-examples-greeter"]
+appbiotic-code-examples = ["appbiotic-code-examples/commands"]
+appbiotic-code-examples-greeter = [
+    "appbiotic-code-examples",
+    "appbiotic-code-examples/appbiotic-code-examples-greeter",
 ]
 json = ["appbiotic-code-error/json"]
 
@@ -17,6 +17,6 @@ json = ["appbiotic-code-error/json"]
 anyhow = { workspace = true }
 appbiotic-code-error = { workspace = true }
 appbiotic-code-runtime = { workspace = true }
-appbiotic-examples = { workspace = true, optional = true }
+appbiotic-code-examples = { workspace = true, optional = true }
 clap = { workspace = true, features = ["derive", "help", "std", "usage"] }
 tracing = { workspace = true }

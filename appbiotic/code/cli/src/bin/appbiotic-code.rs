@@ -8,9 +8,9 @@ use tracing::{event, Level};
 /// A tool to manage your coding projects.
 #[derive(Parser)]
 struct Cli {
-    #[cfg(feature = "appbiotic-examples")]
+    #[cfg(feature = "appbiotic-code-examples")]
     #[command(subcommand)]
-    command: appbiotic_examples::commands::CliCmd,
+    command: appbiotic_code_examples::commands::CliCmd,
 }
 
 pub fn main() -> anyhow::Result<()> {

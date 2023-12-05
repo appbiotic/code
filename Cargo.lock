@@ -44,8 +44,8 @@ version = "0.3.0-alpha.1"
 dependencies = [
  "anyhow",
  "appbiotic-code-error",
+ "appbiotic-code-examples",
  "appbiotic-code-runtime",
- "appbiotic-examples",
  "clap",
  "tracing",
 ]
@@ -55,6 +55,7 @@ name = "appbiotic-code-error"
 version = "0.3.0-alpha.1"
 dependencies = [
  "http",
+ "prost",
  "safer-ffi",
  "serde",
  "serde_json",
@@ -65,21 +66,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "appbiotic-code-runtime"
-version = "0.3.0-alpha.1"
-dependencies = [
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "appbiotic-examples"
+name = "appbiotic-code-examples"
 version = "0.3.0-alpha.1"
 dependencies = [
  "anyhow",
  "appbiotic-code-error",
  "clap",
  "thiserror",
+]
+
+[[package]]
+name = "appbiotic-code-runtime"
+version = "0.3.0-alpha.1"
+dependencies = [
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -365,6 +366,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18fb31db3f9bddb2ea821cde30a9f70117e3f119938b5ee630b7403aa6e2ead9"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "prost"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
+dependencies = [
+ "bytes",
 ]
 
 [[package]]
