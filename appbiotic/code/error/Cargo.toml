@@ -15,6 +15,7 @@ with-http = ["dep:http"]
 protos = ["dep:prost", "dep:tonic"]
 
 [dependencies]
+appbiotic-code-ffi = { workspace = true }
 http = { workspace = true, optional = true }
 prost = { workspace = true, optional = true }
 safer-ffi = { workspace = true, optional = true }
@@ -24,3 +25,7 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 thiserror = { workspace = true }
 tonic = { workspace = true, optional = true }
+tracing = { workspace = true }
+
+[build-dependencies]
+cbindgen = { workspace = true }

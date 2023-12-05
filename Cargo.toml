@@ -8,6 +8,7 @@ members = [
     "appbiotic/code/cli",
     "appbiotic/code/error",
     "appbiotic/code/examples",
+    "appbiotic/code/ffi",
     "appbiotic/code/runtime",
 ]
 
@@ -16,7 +17,9 @@ anyhow = { version = "1.0.75", default-features = false }
 appbiotic-code-cli = { version = "0.3.0-alpha.1", path = "appbiotic/code/cli", default-features = false }
 appbiotic-code-error = { version = "0.3.0-alpha.1", path = "appbiotic/code/error", default-features = false }
 appbiotic-code-examples = { version = "0.3.0-alpha.1", path = "appbiotic/code/examples", default-features = false }
+appbiotic-code-ffi = { version = "0.3.0-alpha.1", path = "appbiotic/code/ffi", default-features = false }
 appbiotic-code-runtime = { version = "0.3.0-alpha.1", path = "appbiotic/code/runtime", default-features = false }
+cbindgen = { version = "0.26.0", default-features = false }
 clap = { version = "4.4.6", default-features = false }
 http = { version = "0.2.9", default-features = false }
 prost = { version = "0.12.3", default-features = false }

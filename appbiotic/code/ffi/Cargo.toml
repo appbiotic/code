@@ -1,0 +1,10 @@
+[package]
+name = "appbiotic-code-ffi"
+version = "0.3.0-alpha.1"
+edition = "2021"
+
+[dependencies]
+tracing = { workspace = true }
+
+[build-dependencies]
+cbindgen = { workspace = true }

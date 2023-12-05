@@ -1,94 +1,117 @@
-//! Types to use in FFI libraries to simplify error handling.
+#![allow(non_camel_case_types)]
 
-use std::ffi::{c_void, CString};
+use appbiotic_code_ffi::{AppbioticCodeFfi_String, AppbioticCodeFfi_Vec};
+use tracing::{event, Level};
 
-use safer_ffi::prelude::*;
+use crate::{AppbioticErrorCode, Error};
 
-use crate::{code, Error};
-
-#[derive_ReprC]
-#[repr(i32)]
-pub enum AppbioticErrorCode {
-    Ok = code::OK,
-    Cancelled = code::CANCELLED,
-    Unknown = code::UNKNOWN,
-    InvalidArgument = code::INVALID_ARGUMENT,
-    DeadlineExceeded = code::DEADLINE_EXCEEDED,
-    NotFound = code::NOT_FOUND,
-    AlreadyExists = code::ALREADY_EXISTS,
-    PermissionDenied = code::PERMISSION_DENIED,
-    Unauthenticated = code::UNAUTHENTICATED,
-    ResourceExhausted = code::RESOURCE_EXHAUSTED,
-    FailedPrecondition = code::FAILED_PRECONDITION,
-    Aborted = code::ABORTED,
-    OutOfRange = code::OUT_OF_RANGE,
-    Unimplemented = code::UNIMPLEMENTED,
-    Internal = code::INTERNAL,
-    Unavailable = code::UNAVAILABLE,
-    DataLoss = code::DATA_LOSS,
-}
-
-#[derive_ReprC]
+/// The success details of an operation.
 #[repr(C)]
-pub struct AppbioticStatus {
-    code: AppbioticErrorCode,
-    message: Option<char_p::Box>,
+pub struct AppbioticCodeError_Status {
+    pub code: AppbioticErrorCode,
+    pub message: AppbioticCodeFfi_String,
 }
 
-impl AppbioticStatus {
+impl AppbioticCodeError_Status {
     pub fn ok() -> Self {
         Self {
             code: AppbioticErrorCode::Ok,
-            message: None,
+            message: AppbioticCodeFfi_String::default(),
+        }
+    }
+
+    pub fn with_message(self, message: impl AsRef<str>) -> Self {
+        Self {
+            code: self.code,
+            message: message.as_ref().to_owned().into(),
         }
     }
 }
 
-impl From<Error> for AppbioticStatus {
+impl From<Error> for AppbioticCodeError_Status {
     fn from(value: Error) -> Self {
-        let (code, message) = match value {
-            Error::Cancelled(_) => (AppbioticErrorCode::Cancelled, value.to_string()),
-            Error::Unknown(_) => (AppbioticErrorCode::Unknown, value.to_string()),
-            Error::InvalidArgument(_) => (AppbioticErrorCode::InvalidArgument, value.to_string()),
-            Error::DeadlineExceeded(_) => (AppbioticErrorCode::DeadlineExceeded, value.to_string()),
-            Error::NotFound(_) => (AppbioticErrorCode::NotFound, value.to_string()),
-            Error::AlreadyExists(_) => (AppbioticErrorCode::AlreadyExists, value.to_string()),
-            Error::PermissionDenied(_) => (AppbioticErrorCode::PermissionDenied, value.to_string()),
-            Error::Unauthenticated(_) => (AppbioticErrorCode::Unauthenticated, value.to_string()),
-            Error::ResourceExhausted(_) => {
-                (AppbioticErrorCode::ResourceExhausted, value.to_string())
-            }
-            Error::FailedPrecondition(_) => {
-                (AppbioticErrorCode::FailedPrecondition, value.to_string())
-            }
-            Error::Aborted(_) => (AppbioticErrorCode::Aborted, value.to_string()),
-            Error::OutOfRange(_) => (AppbioticErrorCode::OutOfRange, value.to_string()),
-            Error::Unimplemented(_) => (AppbioticErrorCode::Unimplemented, value.to_string()),
-            Error::Internal(_) => (AppbioticErrorCode::Internal, value.to_string()),
-            Error::Unavailable(_) => (AppbioticErrorCode::Unavailable, value.to_string()),
-            Error::DataLoss(_) => (AppbioticErrorCode::DataLoss, value.to_string()),
-        };
-        AppbioticStatus {
-            code,
-            message: CString::new(message.as_str()).map_or_else(|_| None, |v| Some(v.into())),
+        Self {
+            code: value.code(),
+            message: value.to_string().into(),
         }
     }
 }
 
-#[derive_ReprC]
-#[repr(C)]
-pub struct AppbioticStatusCallback {
-    ctx: *mut c_void,
-    completion: extern "C" fn(ctx: *mut c_void, status: AppbioticStatus),
+/// Frees the memory of a [`AppbioticCodeError_Status`] pointer.
+///
+/// # Safety
+///
+/// Undefined behavior if pointer is not for the correct type.
+#[no_mangle]
+pub unsafe extern "C" fn AppbioticCodeError_Status_drop(ptr: *mut AppbioticCodeError_Status) {
+    event!(
+        Level::TRACE,
+        "ptr.is_null" = ptr.is_null(),
+        "appbiotic_code_ffi_error_Status_drop"
+    );
+    if !ptr.is_null() {
+        drop(unsafe { Box::from_raw(ptr) })
+    }
 }
 
-unsafe impl Send for AppbioticStatusCallback {}
+/// The result of an operation.
+#[repr(C)]
+pub struct AppbioticCodeError_Result {
+    /// The response from the operation.
+    pub response: AppbioticCodeFfi_Vec,
+    /// The status of the result, i.e., whether successful or not.
+    pub status: AppbioticCodeError_Status,
+}
 
-impl AppbioticStatusCallback {
-    /// Wrapper for `completion` to work around moving split parameters that
-    /// causes Rust to detect the un-sendable `*mut c_void` when this callback
-    /// needs to be run in another thread.
-    pub fn on_complete(&self, status: AppbioticStatus) {
-        (self.completion)(self.ctx, status);
+impl AppbioticCodeError_Result {
+    pub fn with_message(self, message: impl AsRef<str>) -> Self {
+        Self {
+            response: self.response,
+            status: AppbioticCodeError_Status {
+                code: self.status.code,
+                message: message.as_ref().to_owned().into(),
+            },
+        }
+    }
+}
+
+impl From<Vec<u8>> for AppbioticCodeError_Result {
+    fn from(value: Vec<u8>) -> Self {
+        let mut data = value.into_boxed_slice();
+        let result = Self {
+            response: AppbioticCodeFfi_Vec {
+                data: data.as_mut_ptr(),
+                len: data.len(),
+            },
+            status: AppbioticCodeError_Status::ok(),
+        };
+        std::mem::forget(data);
+        result
+    }
+}
+
+impl From<Error> for AppbioticCodeError_Result {
+    fn from(value: Error) -> Self {
+        Self {
+            response: AppbioticCodeFfi_Vec::default(),
+            status: value.into(),
+        }
+    }
+}
+
+/// Frees the memory of a [`AppbioticCodeError_Result`] pointer.
+///
+/// # Safety
+///
+/// Undefined behavior if pointer is not for the correct type.
+#[no_mangle]
+pub unsafe extern "C" fn AppbioticCodeError_Result_drop(ptr: *mut AppbioticCodeError_Result) {
+    event!(
+        Level::TRACE,
+        "ptr.is_null" = ptr.is_null(),
+        "AppbioticCodeError_Result_drop"
+    );
+    if !ptr.is_null() {
+        drop(unsafe { Box::from_raw(ptr) })
     }
 }

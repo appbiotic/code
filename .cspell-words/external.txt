@@ -1,9 +1,10 @@
+cbindgen
 clippy
 errno
 multimap
 proto
-protos
 protobuf
+protos
 repr
 rustfmt
 rustup

@@ -14,27 +14,51 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
-#[cfg(feature = "safer-ffi")]
 pub mod ffi;
 
-pub mod code {
-    pub const OK: i32 = 0;
-    pub const CANCELLED: i32 = 1;
-    pub const UNKNOWN: i32 = 2;
-    pub const INVALID_ARGUMENT: i32 = 3;
-    pub const DEADLINE_EXCEEDED: i32 = 4;
-    pub const NOT_FOUND: i32 = 5;
-    pub const ALREADY_EXISTS: i32 = 6;
-    pub const PERMISSION_DENIED: i32 = 7;
-    pub const UNAUTHENTICATED: i32 = 16;
-    pub const RESOURCE_EXHAUSTED: i32 = 8;
-    pub const FAILED_PRECONDITION: i32 = 9;
-    pub const ABORTED: i32 = 10;
-    pub const OUT_OF_RANGE: i32 = 11;
-    pub const UNIMPLEMENTED: i32 = 12;
-    pub const INTERNAL: i32 = 13;
-    pub const UNAVAILABLE: i32 = 14;
-    pub const DATA_LOSS: i32 = 15;
+#[repr(i32)]
+pub enum AppbioticErrorCode {
+    /// Not an error; returned on success.
+    Ok = 0,
+    /// The operation was cancelled, typically by the caller.
+    Cancelled = 1,
+    /// Unknown error.
+    Unknown = 2,
+    /// The client specified an invalid argument.
+    InvalidArgument = 3,
+    /// The deadline expired before the operation could complete.
+    DeadlineExceeded = 4,
+    /// Some requested entity (e.g., file or directory) was not found.
+    NotFound = 5,
+    /// The entity that a client attempted to create (e.g., file or directory)
+    /// already exists.
+    AlreadyExists = 6,
+    /// The caller does not have permission to execute the specified
+    /// operation.
+    PermissionDenied = 7,
+    /// Some resource has been exhausted, perhaps a per-user quota, or
+    /// perhaps the entire file system is out of space.
+    ResourceExhausted = 8,
+    /// The operation was rejected because the system is not in a state
+    /// required for the operation's execution.
+    FailedPrecondition = 9,
+    /// The operation was aborted, typically due to a concurrency issue such as
+    /// a sequencer check failure or transaction abort.
+    Aborted = 10,
+    /// The operation was attempted past the valid range.
+    OutOfRange = 11,
+    /// The operation is not implemented or is not supported/enabled in this
+    /// service.
+    Unimplemented = 12,
+    /// Internal errors.
+    Internal = 13,
+    /// The service is currently unavailable.
+    Unavailable = 14,
+    /// Unrecoverable data loss or corruption.
+    DataLoss = 15,
+    /// The request does not have valid authentication credentials for the
+    /// operation.
+    Unauthenticated = 16,
 }
 
 // TODO: Find or create library for format and flow markdown comments.
@@ -305,24 +329,24 @@ impl Error {
     /// Returns the gRPC code value.
     ///
     /// See https://github.com/googleapis/googleapis/blob/f36c65081b19e0758ef5696feca27c7dcee5475e/google/rpc/code.proto.
-    pub fn code(&self) -> i32 {
+    pub fn code(&self) -> AppbioticErrorCode {
         match self {
-            Error::Cancelled(_) => code::CANCELLED,
-            Error::Unknown(_) => code::UNKNOWN,
-            Error::InvalidArgument(_) => code::INVALID_ARGUMENT,
-            Error::DeadlineExceeded(_) => code::DEADLINE_EXCEEDED,
-            Error::NotFound(_) => code::NOT_FOUND,
-            Error::AlreadyExists(_) => code::ALREADY_EXISTS,
-            Error::PermissionDenied(_) => code::PERMISSION_DENIED,
-            Error::Unauthenticated(_) => code::UNAUTHENTICATED,
-            Error::ResourceExhausted(_) => code::RESOURCE_EXHAUSTED,
-            Error::FailedPrecondition(_) => code::FAILED_PRECONDITION,
-            Error::Aborted(_) => code::ABORTED,
-            Error::OutOfRange(_) => code::OUT_OF_RANGE,
-            Error::Unimplemented(_) => code::UNIMPLEMENTED,
-            Error::Internal(_) => code::INTERNAL,
-            Error::Unavailable(_) => code::UNAVAILABLE,
-            Error::DataLoss(_) => code::DATA_LOSS,
+            Error::Cancelled(_) => AppbioticErrorCode::Cancelled,
+            Error::Unknown(_) => AppbioticErrorCode::Unknown,
+            Error::InvalidArgument(_) => AppbioticErrorCode::InvalidArgument,
+            Error::DeadlineExceeded(_) => AppbioticErrorCode::DeadlineExceeded,
+            Error::NotFound(_) => AppbioticErrorCode::NotFound,
+            Error::AlreadyExists(_) => AppbioticErrorCode::AlreadyExists,
+            Error::PermissionDenied(_) => AppbioticErrorCode::PermissionDenied,
+            Error::Unauthenticated(_) => AppbioticErrorCode::Unauthenticated,
+            Error::ResourceExhausted(_) => AppbioticErrorCode::ResourceExhausted,
+            Error::FailedPrecondition(_) => AppbioticErrorCode::FailedPrecondition,
+            Error::Aborted(_) => AppbioticErrorCode::Aborted,
+            Error::OutOfRange(_) => AppbioticErrorCode::OutOfRange,
+            Error::Unimplemented(_) => AppbioticErrorCode::Unimplemented,
+            Error::Internal(_) => AppbioticErrorCode::Internal,
+            Error::Unavailable(_) => AppbioticErrorCode::Unavailable,
+            Error::DataLoss(_) => AppbioticErrorCode::DataLoss,
         }
     }
 
@@ -839,49 +863,6 @@ impl fmt::Display for Property {
             Property::ArrayMember { name, index } => write!(f, r#"{}[{}]"#, name, index),
         }
     }
-}
-
-/// A request for inter-module communication.
-#[derive(Clone)]
-pub struct Request<T>
-where
-    T: Send,
-{
-    pub message: T,
-}
-
-impl<T> Request<T>
-where
-    T: Send,
-{
-    pub fn new(message: T) -> Self {
-        Self { message }
-    }
-}
-
-#[cfg(feature = "protos")]
-impl<T, U> TryFrom<tonic::Request<T>> for Request<U>
-where
-    T: Send,
-    U: Send,
-    U: TryFrom<T>,
-{
-    type Error = U::Error;
-
-    fn try_from(value: tonic::Request<T>) -> Result<Self, Self::Error> {
-        Ok(Request {
-            message: value.into_inner().try_into()?,
-        })
-    }
-}
-
-/// A response for inter-module communication.
-#[derive(Clone)]
-pub struct Response<T>
-where
-    T: Send,
-{
-    pub message: T,
 }
 
 #[cfg(test)]
