@@ -15,78 +15,78 @@ enum AppbioticErrorCode
   /**
    * Not an error; returned on success.
    */
-  Ok = 0,
+  AppbioticErrorCode_Ok = 0,
   /**
    * The operation was cancelled, typically by the caller.
    */
-  Cancelled = 1,
+  AppbioticErrorCode_Cancelled = 1,
   /**
    * Unknown error.
    */
-  Unknown = 2,
+  AppbioticErrorCode_Unknown = 2,
   /**
    * The client specified an invalid argument.
    */
-  InvalidArgument = 3,
+  AppbioticErrorCode_InvalidArgument = 3,
   /**
    * The deadline expired before the operation could complete.
    */
-  DeadlineExceeded = 4,
+  AppbioticErrorCode_DeadlineExceeded = 4,
   /**
    * Some requested entity (e.g., file or directory) was not found.
    */
-  NotFound = 5,
+  AppbioticErrorCode_NotFound = 5,
   /**
    * The entity that a client attempted to create (e.g., file or directory)
    * already exists.
    */
-  AlreadyExists = 6,
+  AppbioticErrorCode_AlreadyExists = 6,
   /**
    * The caller does not have permission to execute the specified
    * operation.
    */
-  PermissionDenied = 7,
+  AppbioticErrorCode_PermissionDenied = 7,
   /**
    * Some resource has been exhausted, perhaps a per-user quota, or
    * perhaps the entire file system is out of space.
    */
-  ResourceExhausted = 8,
+  AppbioticErrorCode_ResourceExhausted = 8,
   /**
    * The operation was rejected because the system is not in a state
    * required for the operation's execution.
    */
-  FailedPrecondition = 9,
+  AppbioticErrorCode_FailedPrecondition = 9,
   /**
    * The operation was aborted, typically due to a concurrency issue such as
    * a sequencer check failure or transaction abort.
    */
-  Aborted = 10,
+  AppbioticErrorCode_Aborted = 10,
   /**
    * The operation was attempted past the valid range.
    */
-  OutOfRange = 11,
+  AppbioticErrorCode_OutOfRange = 11,
   /**
    * The operation is not implemented or is not supported/enabled in this
    * service.
    */
-  Unimplemented = 12,
+  AppbioticErrorCode_Unimplemented = 12,
   /**
    * Internal errors.
    */
-  Internal = 13,
+  AppbioticErrorCode_Internal = 13,
   /**
    * The service is currently unavailable.
    */
-  Unavailable = 14,
+  AppbioticErrorCode_Unavailable = 14,
   /**
    * Unrecoverable data loss or corruption.
    */
-  DataLoss = 15,
+  AppbioticErrorCode_DataLoss = 15,
   /**
    * The request does not have valid authentication credentials for the
    * operation.
    */
-  Unauthenticated = 16,
+  AppbioticErrorCode_Unauthenticated = 16,
 };
 #ifndef __cplusplus
 typedef int32_t AppbioticErrorCode;
@@ -95,7 +95,7 @@ typedef int32_t AppbioticErrorCode;
 /**
  * The success details of an operation.
  */
-typedef struct AppbioticCodeError_Status {
+typedef struct {
   AppbioticErrorCode code;
   AppbioticCodeFfi_String message;
 } AppbioticCodeError_Status;
@@ -103,7 +103,7 @@ typedef struct AppbioticCodeError_Status {
 /**
  * The result of an operation.
  */
-typedef struct AppbioticCodeError_Result {
+typedef struct {
   /**
    * The response from the operation.
    */
@@ -111,7 +111,7 @@ typedef struct AppbioticCodeError_Result {
   /**
    * The status of the result, i.e., whether successful or not.
    */
-  struct AppbioticCodeError_Status status;
+  AppbioticCodeError_Status status;
 } AppbioticCodeError_Result;
 
 #ifdef __cplusplus
@@ -125,7 +125,7 @@ extern "C" {
  *
  * Undefined behavior if pointer is not for the correct type.
  */
-void AppbioticCodeError_Status_drop(struct AppbioticCodeError_Status *ptr);
+void AppbioticCodeError_Status_drop(AppbioticCodeError_Status *ptr);
 
 /**
  * Frees the memory of a [`AppbioticCodeError_Result`] pointer.
@@ -134,7 +134,7 @@ void AppbioticCodeError_Status_drop(struct AppbioticCodeError_Status *ptr);
  *
  * Undefined behavior if pointer is not for the correct type.
  */
-void AppbioticCodeError_Result_drop(struct AppbioticCodeError_Result *ptr);
+void AppbioticCodeError_Result_drop(AppbioticCodeError_Result *ptr);
 
 #ifdef __cplusplus
 } // extern "C"

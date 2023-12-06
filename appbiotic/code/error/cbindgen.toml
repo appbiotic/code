@@ -3,3 +3,7 @@ language = "C"
 cpp_compat = true
 include_guard = "APPBIOTIC_CODE_ERROR"
 includes = ["appbiotic/code/ffi/ffi.h"]
+style = "type"
+
+[enum]
+prefix_with_name = true
