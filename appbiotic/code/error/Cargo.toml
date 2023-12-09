@@ -10,15 +10,15 @@ repository = "https://github.com/appbiotic/code/"
 readme = "README.md"
 
 [features]
+full = ["json", "protos"]
 json = ["serde/derive", "serde/std", "serde_json/std"]
-with-http = ["dep:http"]
 protos = ["dep:prost", "dep:tonic"]
+with-http = ["dep:http"]
 
 [dependencies]
 appbiotic-code-ffi = { workspace = true }
 http = { workspace = true, optional = true }
 prost = { workspace = true, optional = true }
-safer-ffi = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 strum = { workspace = true }

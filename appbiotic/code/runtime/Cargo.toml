@@ -3,6 +3,11 @@ name = "appbiotic-code-runtime"
 version = "0.3.0-alpha.1"
 edition = "2021"
 
+[features]
+full = ["json", "protos"]
+json = []
+protos = []
+
 [dependencies]
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter", "fmt"] }

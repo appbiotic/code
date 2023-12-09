@@ -2,3 +2,6 @@ language = "C"
 
 cpp_compat = true
 include_guard = "APPBIOTIC_CODE_FFI"
+
+[export]
+include = ["AppbioticCodeFfi_ReferencedVec"]

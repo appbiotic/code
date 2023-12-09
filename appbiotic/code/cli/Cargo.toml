@@ -5,13 +5,23 @@ version = "0.3.0-alpha.1"
 edition = "2021"
 
 [features]
-default = ["appbiotic-code-examples-greeter"]
-appbiotic-code-examples = ["appbiotic-code-examples/commands"]
-appbiotic-code-examples-greeter = [
-    "appbiotic-code-examples",
-    "appbiotic-code-examples/appbiotic-code-examples-greeter",
+full = [
+    "appbiotic-code-error/full",
+    "appbiotic-code-examples/full",
+    "appbiotic-code-runtime/full",
+    "json",
+    "protos",
 ]
-json = ["appbiotic-code-error/json"]
+json = [
+    "appbiotic-code-error/json",
+    "appbiotic-code-examples/json",
+    "appbiotic-code-runtime/json",
+]
+protos = [
+    "appbiotic-code-error/protos",
+    "appbiotic-code-examples/protos",
+    "appbiotic-code-runtime/protos",
+]
 
 [dependencies]
 anyhow = { workspace = true }

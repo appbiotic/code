@@ -2,8 +2,7 @@
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
   "rust-analyzer.cargo.features": [
-    "appbiotic-code-examples-greeter",
-    "json"
+    "full"
   ],
   "[shellscript]": {
     "editor.codeActionsOnSave": {

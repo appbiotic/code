@@ -6,4 +6,5 @@ fn main() {
     cbindgen::generate(crate_dir)
         .expect("Unable to generate bindings")
         .write_to_file("ffi.h");
+    println!("cargo:rerun-if-changed=src/lib.rs");
 }

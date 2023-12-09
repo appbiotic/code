@@ -25,7 +25,6 @@ http = { version = "0.2.9", default-features = false }
 prost = { version = "0.12.3", default-features = false }
 prost-build = { version = "0.12.3", default-features = false }
 prost-types = { version = "0.12.3", default-features = false }
-safer-ffi = { version = "0.1.4" }
 serde = { version = "1.0.190", default-features = false }
 serde_json = { version = "1.0.108", default-features = false }
 strum = { version = "0.25.0", default-features = false }

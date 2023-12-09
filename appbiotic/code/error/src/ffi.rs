@@ -1,6 +1,8 @@
 #![allow(non_camel_case_types)]
 
-use appbiotic_code_ffi::{AppbioticCodeFfi_String, AppbioticCodeFfi_Vec};
+use std::ffi::c_void;
+
+use appbiotic_code_ffi::{AppbioticCodeFfi_OwnedVec, AppbioticCodeFfi_String};
 use tracing::{event, Level};
 
 use crate::{AppbioticErrorCode, Error};
@@ -58,7 +60,7 @@ pub unsafe extern "C" fn AppbioticCodeError_Status_drop(ptr: *mut AppbioticCodeE
 #[repr(C)]
 pub struct AppbioticCodeError_Result {
     /// The response from the operation.
-    pub response: AppbioticCodeFfi_Vec,
+    pub response: AppbioticCodeFfi_OwnedVec,
     /// The status of the result, i.e., whether successful or not.
     pub status: AppbioticCodeError_Status,
 }
@@ -79,7 +81,7 @@ impl From<Vec<u8>> for AppbioticCodeError_Result {
     fn from(value: Vec<u8>) -> Self {
         let mut data = value.into_boxed_slice();
         let result = Self {
-            response: AppbioticCodeFfi_Vec {
+            response: AppbioticCodeFfi_OwnedVec {
                 data: data.as_mut_ptr(),
                 len: data.len(),
             },
@@ -93,7 +95,7 @@ impl From<Vec<u8>> for AppbioticCodeError_Result {
 impl From<Error> for AppbioticCodeError_Result {
     fn from(value: Error) -> Self {
         Self {
-            response: AppbioticCodeFfi_Vec::default(),
+            response: AppbioticCodeFfi_OwnedVec::default(),
             status: value.into(),
         }
     }
@@ -113,5 +115,25 @@ pub unsafe extern "C" fn AppbioticCodeError_Result_drop(ptr: *mut AppbioticCodeE
     );
     if !ptr.is_null() {
         drop(unsafe { Box::from_raw(ptr) })
+    }
+}
+
+#[repr(C)]
+pub struct AppbioticCodeError_ResultCallback {
+    /// Opaque context pointer used to restore state within completion.
+    ctx: *mut c_void,
+    /// Function called upon completion of the operation with the results in
+    /// `result`, an unowned reference to the result.
+    on_result: extern "C" fn(ctx: *mut c_void, result: AppbioticCodeError_Result),
+}
+
+unsafe impl Send for AppbioticCodeError_ResultCallback {}
+
+impl AppbioticCodeError_ResultCallback {
+    /// Wrapper for `on_complete` to work around moving split parameters that
+    /// causes Rust to detect the un-sendable `*mut c_void` when this callback
+    /// needs to be run in another thread.
+    pub fn on_result(&self, message: AppbioticCodeError_Result) {
+        (self.on_result)(self.ctx, message);
     }
 }

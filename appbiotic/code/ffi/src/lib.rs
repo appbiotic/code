@@ -4,14 +4,14 @@ use std::ffi::{c_char, CString};
 
 use tracing::{event, Level};
 
-/// A raw ptr byte slice for ffi.
+/// A raw ptr byte slice for ffi that cleans up its memory when dropped.
 #[repr(C)]
-pub struct AppbioticCodeFfi_Vec {
+pub struct AppbioticCodeFfi_OwnedVec {
     pub data: *mut u8,
     pub len: usize,
 }
 
-impl Default for AppbioticCodeFfi_Vec {
+impl Default for AppbioticCodeFfi_OwnedVec {
     fn default() -> Self {
         Self {
             data: std::ptr::null_mut(),
@@ -20,7 +20,7 @@ impl Default for AppbioticCodeFfi_Vec {
     }
 }
 
-impl From<Vec<u8>> for AppbioticCodeFfi_Vec {
+impl From<Vec<u8>> for AppbioticCodeFfi_OwnedVec {
     fn from(value: Vec<u8>) -> Self {
         let mut value = value.into_boxed_slice();
         let result = Self {
@@ -32,12 +32,12 @@ impl From<Vec<u8>> for AppbioticCodeFfi_Vec {
     }
 }
 
-impl Drop for AppbioticCodeFfi_Vec {
+impl Drop for AppbioticCodeFfi_OwnedVec {
     fn drop(&mut self) {
         event!(
             Level::TRACE,
             "data.is_null" = self.data.is_null(),
-            "AppbioticCodeFfi_Vec::drop"
+            "AppbioticCodeFfi_OwnedVec::drop"
         );
         if !self.data.is_null() {
             drop(unsafe { Box::from_raw(self.data) });
@@ -45,20 +45,49 @@ impl Drop for AppbioticCodeFfi_Vec {
     }
 }
 
-/// Frees the memory of a [`AppbioticCodeFfi_Vec`] pointer.
+/// Frees the memory of a [`AppbioticCodeFfi_OwnedVec`] pointer.
 ///
 /// # Safety
 ///
 /// Undefined behavior if pointer is not for the correct type.
 #[no_mangle]
-pub unsafe extern "C" fn AppbioticCodeFfi_Vec_Drop(ptr: *mut AppbioticCodeFfi_Vec) {
+pub unsafe extern "C" fn AppbioticCodeFfi_OwnedVec_Drop(ptr: *mut AppbioticCodeFfi_OwnedVec) {
     event!(
         Level::TRACE,
         "ptr.is_null" = ptr.is_null(),
-        "AppbioticCodeFfi_Vec_Drop"
+        "AppbioticCodeFfi_OwnedVec_Drop"
     );
     if !ptr.is_null() {
         drop(unsafe { Box::from_raw(ptr) })
+    }
+}
+
+/// A raw ptr byte slice for ffi which does not try to delete memory when
+/// dropped.
+#[repr(C)]
+pub struct AppbioticCodeFfi_ReferencedVec {
+    pub data: *mut u8,
+    pub len: usize,
+}
+
+impl Default for AppbioticCodeFfi_ReferencedVec {
+    fn default() -> Self {
+        Self {
+            data: std::ptr::null_mut(),
+            len: 0,
+        }
+    }
+}
+
+impl From<Vec<u8>> for AppbioticCodeFfi_ReferencedVec {
+    fn from(value: Vec<u8>) -> Self {
+        let mut value = value.into_boxed_slice();
+        let result = Self {
+            data: value.as_mut_ptr(),
+            len: value.len(),
+        };
+        std::mem::forget(value);
+        result
     }
 }
 
