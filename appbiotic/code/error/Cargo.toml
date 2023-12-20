@@ -12,13 +12,13 @@ readme = "README.md"
 [features]
 full = ["json", "protos"]
 json = ["serde/derive", "serde/std", "serde_json/std"]
-protos = ["dep:prost", "dep:tonic"]
+protos = ["dep:prost", "dep:prost-types", "dep:tonic"]
 with-http = ["dep:http"]
 
 [dependencies]
-appbiotic-code-ffi = { workspace = true }
 http = { workspace = true, optional = true }
 prost = { workspace = true, optional = true }
+prost-types = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 serde_json = { workspace = true, optional = true }
 strum = { workspace = true }
@@ -26,6 +26,3 @@ strum_macros = { workspace = true }
 thiserror = { workspace = true }
 tonic = { workspace = true, optional = true }
 tracing = { workspace = true }
-
-[build-dependencies]
-cbindgen = { workspace = true }

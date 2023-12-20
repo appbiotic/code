@@ -14,8 +14,6 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
-pub mod ffi;
-
 #[repr(i32)]
 pub enum AppbioticErrorCode {
     /// Not an error; returned on success.
