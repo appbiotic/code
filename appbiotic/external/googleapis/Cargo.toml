@@ -1,0 +1,26 @@
+[package]
+name = "appbiotic-external-googleapis"
+version = "0.3.0-alpha.1"
+edition = "2021"
+
+[features]
+full = ["json", "protos", "rpc", "types"]
+json = ["serde/derive", "serde/std", "serde_json/std"]
+protos = ["dep:prost", "dep:prost-types"]
+rpc = []
+types = []
+
+[dependencies]
+appbiotic-code-generation-protos = { workspace = true }
+prost = { workspace = true, optional = true }
+prost-types = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+
+[dev-dependencies]
+bytes = { workspace = true }
+
+[build-dependencies]
+appbiotic-code-generation-protos = { workspace = true }

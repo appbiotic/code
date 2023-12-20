@@ -1,0 +1,21 @@
+[package]
+name = "appbiotic-code-generation-protos"
+version = "0.3.0-alpha.1"
+edition = "2021"
+
+[features]
+full = ["json", "protos"]
+json = []
+protos = []
+
+[dependencies]
+derive-new = { workspace = true }
+heck = { workspace = true }
+http = { workspace = true }
+itertools = { workspace = true, features = ["use_std"] }
+prost = { workspace = true }
+prost-types = { workspace = true }
+serde = { workspace = true }
+strum = { workspace = true, features = ["derive"] }
+tonic = { workspace = true, features = ["codegen", "prost"] }
+tonic-build = { workspace = true, features = ["prost"] }

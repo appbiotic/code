@@ -8,7 +8,9 @@ members = [
     "appbiotic/code/cli",
     "appbiotic/code/error",
     "appbiotic/code/examples",
+    "appbiotic/code/generation/protos",
     "appbiotic/code/runtime",
+    "appbiotic/external/googleapis",
 ]
 
 [workspace.dependencies]
@@ -16,9 +18,15 @@ anyhow = { version = "1.0.75", default-features = false }
 appbiotic-code-cli = { version = "0.3.0-alpha.1", path = "appbiotic/code/cli", default-features = false }
 appbiotic-code-error = { version = "0.3.0-alpha.1", path = "appbiotic/code/error", default-features = false }
 appbiotic-code-examples = { version = "0.3.0-alpha.1", path = "appbiotic/code/examples", default-features = false }
+appbiotic-code-generation-protos = { version = "0.3.0-alpha.1", path = "appbiotic/code/generation/protos", default-features = false }
 appbiotic-code-runtime = { version = "0.3.0-alpha.1", path = "appbiotic/code/runtime", default-features = false }
+appbiotic-external-googleapis = { version = "0.3.0-alpha.1", path = "appbiotic/external/googleapis", default-features = false }
+bytes = { version = "1.5.0", default-features = false }
 clap = { version = "4.4.6", default-features = false }
+derive-new = { version = "0.5.9", default-features = false }
+heck = { version = "0.4.1", default-features = false }
 http = { version = "0.2.9", default-features = false }
+itertools = { version = "0.12.0", default-features = false }
 prost = { version = "0.12.3", default-features = false }
 prost-build = { version = "0.12.3", default-features = false }
 prost-types = { version = "0.12.3", default-features = false }
@@ -28,5 +36,6 @@ strum = { version = "0.25.0", default-features = false }
 strum_macros = { version = "0.25.2", default-features = false }
 thiserror = { version = "1.0.49", default-features = false }
 tonic = { version = "0.10.2", default-features = false }
+tonic-build = { version = "0.10.2", default-features = false }
 tracing = { version = "0.1.39", default-features = false }
 tracing-subscriber = { version = "0.3.17", default-features = false }

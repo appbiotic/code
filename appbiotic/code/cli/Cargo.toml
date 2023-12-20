@@ -28,5 +28,6 @@ anyhow = { workspace = true }
 appbiotic-code-error = { workspace = true }
 appbiotic-code-runtime = { workspace = true }
 appbiotic-code-examples = { workspace = true, optional = true }
+appbiotic-external-googleapis = { workspace = true, features = ["full"] }
 clap = { workspace = true, features = ["derive", "help", "std", "usage"] }
 tracing = { workspace = true }
