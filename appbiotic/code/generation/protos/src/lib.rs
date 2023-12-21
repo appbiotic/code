@@ -313,7 +313,6 @@ pub fn build(config: ProtosGenerationConfig) {
         let module_name = itertools::join(
             package_name
                 .split('.')
-                .into_iter()
                 .map(|x| x.replace('-', "_"))
                 .map(|x| if x.eq("type") { "r#type".to_owned() } else { x }),
             "::",

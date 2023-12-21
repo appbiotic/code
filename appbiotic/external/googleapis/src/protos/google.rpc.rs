@@ -1,201 +1,3 @@
-/// The canonical error codes for gRPC APIs.
-///
-///
-/// Sometimes multiple error codes may apply.  Services should return
-/// the most specific error code that applies.  For example, prefer
-/// `OUT_OF_RANGE` over `FAILED_PRECONDITION` if both codes apply.
-/// Similarly prefer `NOT_FOUND` or `ALREADY_EXISTS` over `FAILED_PRECONDITION`.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum Code {
-    /// Not an error; returned on success.
-    ///
-    /// HTTP Mapping: 200 OK
-    Ok = 0,
-    /// The operation was cancelled, typically by the caller.
-    ///
-    /// HTTP Mapping: 499 Client Closed Request
-    Cancelled = 1,
-    /// Unknown error.  For example, this error may be returned when
-    /// a `Status` value received from another address space belongs to
-    /// an error space that is not known in this address space.  Also
-    /// errors raised by APIs that do not return enough error information
-    /// may be converted to this error.
-    ///
-    /// HTTP Mapping: 500 Internal Server Error
-    Unknown = 2,
-    /// The client specified an invalid argument.  Note that this differs
-    /// from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments
-    /// that are problematic regardless of the state of the system
-    /// (e.g., a malformed file name).
-    ///
-    /// HTTP Mapping: 400 Bad Request
-    InvalidArgument = 3,
-    /// The deadline expired before the operation could complete. For operations
-    /// that change the state of the system, this error may be returned
-    /// even if the operation has completed successfully.  For example, a
-    /// successful response from a server could have been delayed long
-    /// enough for the deadline to expire.
-    ///
-    /// HTTP Mapping: 504 Gateway Timeout
-    DeadlineExceeded = 4,
-    /// Some requested entity (e.g., file or directory) was not found.
-    ///
-    /// Note to server developers: if a request is denied for an entire class
-    /// of users, such as gradual feature rollout or undocumented allowlist,
-    /// `NOT_FOUND` may be used. If a request is denied for some users within
-    /// a class of users, such as user-based access control, `PERMISSION_DENIED`
-    /// must be used.
-    ///
-    /// HTTP Mapping: 404 Not Found
-    NotFound = 5,
-    /// The entity that a client attempted to create (e.g., file or directory)
-    /// already exists.
-    ///
-    /// HTTP Mapping: 409 Conflict
-    AlreadyExists = 6,
-    /// The caller does not have permission to execute the specified
-    /// operation. `PERMISSION_DENIED` must not be used for rejections
-    /// caused by exhausting some resource (use `RESOURCE_EXHAUSTED`
-    /// instead for those errors). `PERMISSION_DENIED` must not be
-    /// used if the caller can not be identified (use `UNAUTHENTICATED`
-    /// instead for those errors). This error code does not imply the
-    /// request is valid or the requested entity exists or satisfies
-    /// other pre-conditions.
-    ///
-    /// HTTP Mapping: 403 Forbidden
-    PermissionDenied = 7,
-    /// The request does not have valid authentication credentials for the
-    /// operation.
-    ///
-    /// HTTP Mapping: 401 Unauthorized
-    Unauthenticated = 16,
-    /// Some resource has been exhausted, perhaps a per-user quota, or
-    /// perhaps the entire file system is out of space.
-    ///
-    /// HTTP Mapping: 429 Too Many Requests
-    ResourceExhausted = 8,
-    /// The operation was rejected because the system is not in a state
-    /// required for the operation's execution.  For example, the directory
-    /// to be deleted is non-empty, an rmdir operation is applied to
-    /// a non-directory, etc.
-    ///
-    /// Service implementors can use the following guidelines to decide
-    /// between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`:
-    ///   (a) Use `UNAVAILABLE` if the client can retry just the failing call.
-    ///   (b) Use `ABORTED` if the client should retry at a higher level. For
-    ///       example, when a client-specified test-and-set fails, indicating the
-    ///       client should restart a read-modify-write sequence.
-    ///   (c) Use `FAILED_PRECONDITION` if the client should not retry until
-    ///       the system state has been explicitly fixed. For example, if an "rmdir"
-    ///       fails because the directory is non-empty, `FAILED_PRECONDITION`
-    ///       should be returned since the client should not retry unless
-    ///       the files are deleted from the directory.
-    ///
-    /// HTTP Mapping: 400 Bad Request
-    FailedPrecondition = 9,
-    /// The operation was aborted, typically due to a concurrency issue such as
-    /// a sequencer check failure or transaction abort.
-    ///
-    /// See the guidelines above for deciding between `FAILED_PRECONDITION`,
-    /// `ABORTED`, and `UNAVAILABLE`.
-    ///
-    /// HTTP Mapping: 409 Conflict
-    Aborted = 10,
-    /// The operation was attempted past the valid range.  E.g., seeking or
-    /// reading past end-of-file.
-    ///
-    /// Unlike `INVALID_ARGUMENT`, this error indicates a problem that may
-    /// be fixed if the system state changes. For example, a 32-bit file
-    /// system will generate `INVALID_ARGUMENT` if asked to read at an
-    /// offset that is not in the range \[0,2^32-1\], but it will generate
-    /// `OUT_OF_RANGE` if asked to read from an offset past the current
-    /// file size.
-    ///
-    /// There is a fair bit of overlap between `FAILED_PRECONDITION` and
-    /// `OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific
-    /// error) when it applies so that callers who are iterating through
-    /// a space can easily look for an `OUT_OF_RANGE` error to detect when
-    /// they are done.
-    ///
-    /// HTTP Mapping: 400 Bad Request
-    OutOfRange = 11,
-    /// The operation is not implemented or is not supported/enabled in this
-    /// service.
-    ///
-    /// HTTP Mapping: 501 Not Implemented
-    Unimplemented = 12,
-    /// Internal errors.  This means that some invariants expected by the
-    /// underlying system have been broken.  This error code is reserved
-    /// for serious errors.
-    ///
-    /// HTTP Mapping: 500 Internal Server Error
-    Internal = 13,
-    /// The service is currently unavailable.  This is most likely a
-    /// transient condition, which can be corrected by retrying with
-    /// a backoff. Note that it is not always safe to retry
-    /// non-idempotent operations.
-    ///
-    /// See the guidelines above for deciding between `FAILED_PRECONDITION`,
-    /// `ABORTED`, and `UNAVAILABLE`.
-    ///
-    /// HTTP Mapping: 503 Service Unavailable
-    Unavailable = 14,
-    /// Unrecoverable data loss or corruption.
-    ///
-    /// HTTP Mapping: 500 Internal Server Error
-    DataLoss = 15,
-}
-impl Code {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Code::Ok => "OK",
-            Code::Cancelled => "CANCELLED",
-            Code::Unknown => "UNKNOWN",
-            Code::InvalidArgument => "INVALID_ARGUMENT",
-            Code::DeadlineExceeded => "DEADLINE_EXCEEDED",
-            Code::NotFound => "NOT_FOUND",
-            Code::AlreadyExists => "ALREADY_EXISTS",
-            Code::PermissionDenied => "PERMISSION_DENIED",
-            Code::Unauthenticated => "UNAUTHENTICATED",
-            Code::ResourceExhausted => "RESOURCE_EXHAUSTED",
-            Code::FailedPrecondition => "FAILED_PRECONDITION",
-            Code::Aborted => "ABORTED",
-            Code::OutOfRange => "OUT_OF_RANGE",
-            Code::Unimplemented => "UNIMPLEMENTED",
-            Code::Internal => "INTERNAL",
-            Code::Unavailable => "UNAVAILABLE",
-            Code::DataLoss => "DATA_LOSS",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "OK" => Some(Self::Ok),
-            "CANCELLED" => Some(Self::Cancelled),
-            "UNKNOWN" => Some(Self::Unknown),
-            "INVALID_ARGUMENT" => Some(Self::InvalidArgument),
-            "DEADLINE_EXCEEDED" => Some(Self::DeadlineExceeded),
-            "NOT_FOUND" => Some(Self::NotFound),
-            "ALREADY_EXISTS" => Some(Self::AlreadyExists),
-            "PERMISSION_DENIED" => Some(Self::PermissionDenied),
-            "UNAUTHENTICATED" => Some(Self::Unauthenticated),
-            "RESOURCE_EXHAUSTED" => Some(Self::ResourceExhausted),
-            "FAILED_PRECONDITION" => Some(Self::FailedPrecondition),
-            "ABORTED" => Some(Self::Aborted),
-            "OUT_OF_RANGE" => Some(Self::OutOfRange),
-            "UNIMPLEMENTED" => Some(Self::Unimplemented),
-            "INTERNAL" => Some(Self::Internal),
-            "UNAVAILABLE" => Some(Self::Unavailable),
-            "DATA_LOSS" => Some(Self::DataLoss),
-            _ => None,
-        }
-    }
-}
 /// Represents an HTTP request.
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -243,55 +45,34 @@ pub struct HttpHeader {
     #[prost(string, tag = "2")]
     pub value: ::prost::alloc::string::String,
 }
-/// The `Status` type defines a logical error model that is suitable for
-/// different programming environments, including REST APIs and RPC APIs. It is
-/// used by [gRPC](<https://github.com/grpc>). Each `Status` message contains
-/// three pieces of data: error code, error message, and error details.
-///
-/// You can find out more about this error model and how to work with it in the
-/// [API Design Guide](<https://cloud.google.com/apis/design/errors>).
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Status {
-    /// The status code, which should be an enum value of
-    /// [google.rpc.Code][google.rpc.Code].
-    #[prost(int32, tag = "1")]
-    pub code: i32,
-    /// A developer-facing error message, which should be in English. Any
-    /// user-facing error message should be localized and sent in the
-    /// [google.rpc.Status.details][google.rpc.Status.details] field, or localized
-    /// by the client.
-    #[prost(string, tag = "2")]
-    pub message: ::prost::alloc::string::String,
-    /// A list of messages that carry the error details.  There is a common set of
-    /// message types for APIs to use.
-    #[prost(message, repeated, tag = "3")]
-    pub details: ::prost::alloc::vec::Vec<::prost_types::Any>,
-}
 /// Describes the cause of the error with structured details.
 ///
 /// Example of an error when contacting the "pubsub.googleapis.com" API when it
 /// is not enabled:
 ///
-///      { "reason": "API_DISABLED"
-///        "domain": "googleapis.com"
-///        "metadata": {
-///          "resource": "projects/123",
-///          "service": "pubsub.googleapis.com"
-///        }
-///      }
+/// ```text
+/// { "reason": "API_DISABLED"
+///    "domain": "googleapis.com"
+///    "metadata": {
+///      "resource": "projects/123",
+///      "service": "pubsub.googleapis.com"
+///    }
+/// }
+/// ```
 ///
 /// This response indicates that the pubsub.googleapis.com API is not enabled.
 ///
 /// Example of an error that is returned when attempting to create a Spanner
 /// instance in a region that is out of stock:
 ///
-///      { "reason": "STOCKOUT"
-///        "domain": "spanner.googleapis.com",
-///        "metadata": {
-///          "availableRegions": "us-central1,us-east2"
-///        }
-///      }
+/// ```text
+/// { "reason": "STOCKOUT"
+///    "domain": "spanner.googleapis.com",
+///    "metadata": {
+///      "availableRegions": "us-central1,us-east2"
+///    }
+/// }
+/// ```
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ErrorInfo {
@@ -312,7 +93,7 @@ pub struct ErrorInfo {
     pub domain: ::prost::alloc::string::String,
     /// Additional structured details about this error.
     ///
-    /// Keys should match /\[a-zA-Z0-9-_\]/ and be limited to 64 characters in
+    /// Keys should match /\[a-zA-Z0-9-\_\]/ and be limited to 64 characters in
     /// length. When identifying the current value of an exceeded limit, the units
     /// should be contained in the key, not the value.  For example, rather than
     /// {"instanceLimit": "100/request"}, should be returned as,
@@ -453,37 +234,39 @@ pub mod bad_request {
         ///
         /// Consider the following:
         ///
-        ///      message CreateContactRequest {
-        ///        message EmailAddress {
-        ///          enum Type {
-        ///            TYPE_UNSPECIFIED = 0;
-        ///            HOME = 1;
-        ///            WORK = 2;
-        ///          }
-        ///
-        ///          optional string email = 1;
-        ///          repeated EmailType type = 2;
-        ///        }
-        ///
-        ///        string full_name = 1;
-        ///        repeated EmailAddress email_addresses = 2;
+        /// ```text
+        /// message CreateContactRequest {
+        ///    message EmailAddress {
+        ///      enum Type {
+        ///        TYPE_UNSPECIFIED = 0;
+        ///        HOME = 1;
+        ///        WORK = 2;
         ///      }
+        ///
+        ///      optional string email = 1;
+        ///      repeated EmailType type = 2;
+        ///    }
+        ///
+        ///    string full_name = 1;
+        ///    repeated EmailAddress email_addresses = 2;
+        /// }
+        /// ```
         ///
         /// In this example, in proto `field` could take one of the following values:
         ///
         /// * `full_name` for a violation in the `full_name` value
         /// * `email_addresses\[1\].email` for a violation in the `email` field of the
-        ///    first `email_addresses` message
+        ///   first `email_addresses` message
         /// * `email_addresses\[3\].type\[2\]` for a violation in the second `type`
-        ///    value in the third `email_addresses` message.
+        ///   value in the third `email_addresses` message.
         ///
         /// In JSON, the same values are represented as:
         ///
         /// * `fullName` for a violation in the `fullName` value
         /// * `emailAddresses\[1\].email` for a violation in the `email` field of the
-        ///    first `emailAddresses` message
+        ///   first `emailAddresses` message
         /// * `emailAddresses\[3\].type\[2\]` for a violation in the second `type`
-        ///    value in the third `emailAddresses` message.
+        ///   value in the third `emailAddresses` message.
         #[prost(string, tag = "1")]
         pub field: ::prost::alloc::string::String,
         /// A description of why the request element is bad.
@@ -517,7 +300,7 @@ pub struct ResourceInfo {
     /// The name of the resource being accessed.  For example, a shared calendar
     /// name: "example.com_4fghdhgsrgh@group.calendar.google.com", if the current
     /// error is
-    /// [google.rpc.Code.PERMISSION_DENIED][google.rpc.Code.PERMISSION_DENIED].
+    /// \[google.rpc.Code.PERMISSION_DENIED\]\[google.rpc.Code.PERMISSION_DENIED\].
     #[prost(string, tag = "2")]
     pub resource_name: ::prost::alloc::string::String,
     /// The owner of the resource (optional).
@@ -570,4 +353,226 @@ pub struct LocalizedMessage {
     /// The localized error message in the above locale.
     #[prost(string, tag = "2")]
     pub message: ::prost::alloc::string::String,
+}
+/// The `Status` type defines a logical error model that is suitable for
+/// different programming environments, including REST APIs and RPC APIs. It is
+/// used by [gRPC](<https://github.com/grpc>). Each `Status` message contains
+/// three pieces of data: error code, error message, and error details.
+///
+/// You can find out more about this error model and how to work with it in the
+/// [API Design Guide](<https://cloud.google.com/apis/design/errors>).
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Status {
+    /// The status code, which should be an enum value of
+    /// \[google.rpc.Code\]\[google.rpc.Code\].
+    #[prost(int32, tag = "1")]
+    pub code: i32,
+    /// A developer-facing error message, which should be in English. Any
+    /// user-facing error message should be localized and sent in the
+    /// \[google.rpc.Status.details\]\[google.rpc.Status.details\] field, or localized
+    /// by the client.
+    #[prost(string, tag = "2")]
+    pub message: ::prost::alloc::string::String,
+    /// A list of messages that carry the error details.  There is a common set of
+    /// message types for APIs to use.
+    #[prost(message, repeated, tag = "3")]
+    pub details: ::prost::alloc::vec::Vec<::prost_types::Any>,
+}
+/// The canonical error codes for gRPC APIs.
+///
+/// Sometimes multiple error codes may apply.  Services should return
+/// the most specific error code that applies.  For example, prefer
+/// `OUT_OF_RANGE` over `FAILED_PRECONDITION` if both codes apply.
+/// Similarly prefer `NOT_FOUND` or `ALREADY_EXISTS` over `FAILED_PRECONDITION`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum Code {
+    /// Not an error; returned on success.
+    ///
+    /// HTTP Mapping: 200 OK
+    Ok = 0,
+    /// The operation was cancelled, typically by the caller.
+    ///
+    /// HTTP Mapping: 499 Client Closed Request
+    Cancelled = 1,
+    /// Unknown error.  For example, this error may be returned when
+    /// a `Status` value received from another address space belongs to
+    /// an error space that is not known in this address space.  Also
+    /// errors raised by APIs that do not return enough error information
+    /// may be converted to this error.
+    ///
+    /// HTTP Mapping: 500 Internal Server Error
+    Unknown = 2,
+    /// The client specified an invalid argument.  Note that this differs
+    /// from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates arguments
+    /// that are problematic regardless of the state of the system
+    /// (e.g., a malformed file name).
+    ///
+    /// HTTP Mapping: 400 Bad Request
+    InvalidArgument = 3,
+    /// The deadline expired before the operation could complete. For operations
+    /// that change the state of the system, this error may be returned
+    /// even if the operation has completed successfully.  For example, a
+    /// successful response from a server could have been delayed long
+    /// enough for the deadline to expire.
+    ///
+    /// HTTP Mapping: 504 Gateway Timeout
+    DeadlineExceeded = 4,
+    /// Some requested entity (e.g., file or directory) was not found.
+    ///
+    /// Note to server developers: if a request is denied for an entire class
+    /// of users, such as gradual feature rollout or undocumented allowlist,
+    /// `NOT_FOUND` may be used. If a request is denied for some users within
+    /// a class of users, such as user-based access control, `PERMISSION_DENIED`
+    /// must be used.
+    ///
+    /// HTTP Mapping: 404 Not Found
+    NotFound = 5,
+    /// The entity that a client attempted to create (e.g., file or directory)
+    /// already exists.
+    ///
+    /// HTTP Mapping: 409 Conflict
+    AlreadyExists = 6,
+    /// The caller does not have permission to execute the specified
+    /// operation. `PERMISSION_DENIED` must not be used for rejections
+    /// caused by exhausting some resource (use `RESOURCE_EXHAUSTED`
+    /// instead for those errors). `PERMISSION_DENIED` must not be
+    /// used if the caller can not be identified (use `UNAUTHENTICATED`
+    /// instead for those errors). This error code does not imply the
+    /// request is valid or the requested entity exists or satisfies
+    /// other pre-conditions.
+    ///
+    /// HTTP Mapping: 403 Forbidden
+    PermissionDenied = 7,
+    /// The request does not have valid authentication credentials for the
+    /// operation.
+    ///
+    /// HTTP Mapping: 401 Unauthorized
+    Unauthenticated = 16,
+    /// Some resource has been exhausted, perhaps a per-user quota, or
+    /// perhaps the entire file system is out of space.
+    ///
+    /// HTTP Mapping: 429 Too Many Requests
+    ResourceExhausted = 8,
+    /// The operation was rejected because the system is not in a state
+    /// required for the operation's execution.  For example, the directory
+    /// to be deleted is non-empty, an rmdir operation is applied to
+    /// a non-directory, etc.
+    ///
+    /// Service implementors can use the following guidelines to decide
+    /// between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`:
+    /// (a) Use `UNAVAILABLE` if the client can retry just the failing call.
+    /// (b) Use `ABORTED` if the client should retry at a higher level. For
+    /// example, when a client-specified test-and-set fails, indicating the
+    /// client should restart a read-modify-write sequence.
+    /// (c) Use `FAILED_PRECONDITION` if the client should not retry until
+    /// the system state has been explicitly fixed. For example, if an "rmdir"
+    /// fails because the directory is non-empty, `FAILED_PRECONDITION`
+    /// should be returned since the client should not retry unless
+    /// the files are deleted from the directory.
+    ///
+    /// HTTP Mapping: 400 Bad Request
+    FailedPrecondition = 9,
+    /// The operation was aborted, typically due to a concurrency issue such as
+    /// a sequencer check failure or transaction abort.
+    ///
+    /// See the guidelines above for deciding between `FAILED_PRECONDITION`,
+    /// `ABORTED`, and `UNAVAILABLE`.
+    ///
+    /// HTTP Mapping: 409 Conflict
+    Aborted = 10,
+    /// The operation was attempted past the valid range.  E.g., seeking or
+    /// reading past end-of-file.
+    ///
+    /// Unlike `INVALID_ARGUMENT`, this error indicates a problem that may
+    /// be fixed if the system state changes. For example, a 32-bit file
+    /// system will generate `INVALID_ARGUMENT` if asked to read at an
+    /// offset that is not in the range \[0,2^32-1\], but it will generate
+    /// `OUT_OF_RANGE` if asked to read from an offset past the current
+    /// file size.
+    ///
+    /// There is a fair bit of overlap between `FAILED_PRECONDITION` and
+    /// `OUT_OF_RANGE`.  We recommend using `OUT_OF_RANGE` (the more specific
+    /// error) when it applies so that callers who are iterating through
+    /// a space can easily look for an `OUT_OF_RANGE` error to detect when
+    /// they are done.
+    ///
+    /// HTTP Mapping: 400 Bad Request
+    OutOfRange = 11,
+    /// The operation is not implemented or is not supported/enabled in this
+    /// service.
+    ///
+    /// HTTP Mapping: 501 Not Implemented
+    Unimplemented = 12,
+    /// Internal errors.  This means that some invariants expected by the
+    /// underlying system have been broken.  This error code is reserved
+    /// for serious errors.
+    ///
+    /// HTTP Mapping: 500 Internal Server Error
+    Internal = 13,
+    /// The service is currently unavailable.  This is most likely a
+    /// transient condition, which can be corrected by retrying with
+    /// a backoff. Note that it is not always safe to retry
+    /// non-idempotent operations.
+    ///
+    /// See the guidelines above for deciding between `FAILED_PRECONDITION`,
+    /// `ABORTED`, and `UNAVAILABLE`.
+    ///
+    /// HTTP Mapping: 503 Service Unavailable
+    Unavailable = 14,
+    /// Unrecoverable data loss or corruption.
+    ///
+    /// HTTP Mapping: 500 Internal Server Error
+    DataLoss = 15,
+}
+impl Code {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Code::Ok => "OK",
+            Code::Cancelled => "CANCELLED",
+            Code::Unknown => "UNKNOWN",
+            Code::InvalidArgument => "INVALID_ARGUMENT",
+            Code::DeadlineExceeded => "DEADLINE_EXCEEDED",
+            Code::NotFound => "NOT_FOUND",
+            Code::AlreadyExists => "ALREADY_EXISTS",
+            Code::PermissionDenied => "PERMISSION_DENIED",
+            Code::Unauthenticated => "UNAUTHENTICATED",
+            Code::ResourceExhausted => "RESOURCE_EXHAUSTED",
+            Code::FailedPrecondition => "FAILED_PRECONDITION",
+            Code::Aborted => "ABORTED",
+            Code::OutOfRange => "OUT_OF_RANGE",
+            Code::Unimplemented => "UNIMPLEMENTED",
+            Code::Internal => "INTERNAL",
+            Code::Unavailable => "UNAVAILABLE",
+            Code::DataLoss => "DATA_LOSS",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "OK" => Some(Self::Ok),
+            "CANCELLED" => Some(Self::Cancelled),
+            "UNKNOWN" => Some(Self::Unknown),
+            "INVALID_ARGUMENT" => Some(Self::InvalidArgument),
+            "DEADLINE_EXCEEDED" => Some(Self::DeadlineExceeded),
+            "NOT_FOUND" => Some(Self::NotFound),
+            "ALREADY_EXISTS" => Some(Self::AlreadyExists),
+            "PERMISSION_DENIED" => Some(Self::PermissionDenied),
+            "UNAUTHENTICATED" => Some(Self::Unauthenticated),
+            "RESOURCE_EXHAUSTED" => Some(Self::ResourceExhausted),
+            "FAILED_PRECONDITION" => Some(Self::FailedPrecondition),
+            "ABORTED" => Some(Self::Aborted),
+            "OUT_OF_RANGE" => Some(Self::OutOfRange),
+            "UNIMPLEMENTED" => Some(Self::Unimplemented),
+            "INTERNAL" => Some(Self::Internal),
+            "UNAVAILABLE" => Some(Self::Unavailable),
+            "DATA_LOSS" => Some(Self::DataLoss),
+            _ => None,
+        }
+    }
 }

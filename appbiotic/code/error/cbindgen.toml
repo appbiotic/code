@@ -1,0 +1,11 @@
+language = "C"
+
+include_guard = "APPBIOTIC_CODE_ERROR"
+sys_includes = ["CoreFoundation/CFAvailability.h"]
+
+[enum]
+prefix_with_name = true
+
+[export]
+include = ["Code"]
+prefix = "appbiotic_code_error_"

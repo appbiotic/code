@@ -26,3 +26,6 @@ strum_macros = { workspace = true }
 thiserror = { workspace = true }
 tonic = { workspace = true, optional = true }
 tracing = { workspace = true }
+
+[build-dependencies]
+cbindgen = { workspace = true }

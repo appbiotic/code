@@ -14,10 +14,8 @@ use std::fmt;
 
 use strum_macros::IntoStaticStr;
 
-pub use 
-
 #[repr(i32)]
-pub enum AppbioticErrorCode {
+pub enum Code {
     /// Not an error; returned on success.
     Ok = 0,
     /// The operation was cancelled, typically by the caller.
@@ -329,24 +327,24 @@ impl Error {
     /// Returns the gRPC code value.
     ///
     /// See https://github.com/googleapis/googleapis/blob/f36c65081b19e0758ef5696feca27c7dcee5475e/google/rpc/code.proto.
-    pub fn code(&self) -> AppbioticErrorCode {
+    pub fn code(&self) -> Code {
         match self {
-            Error::Cancelled(_) => AppbioticErrorCode::Cancelled,
-            Error::Unknown(_) => AppbioticErrorCode::Unknown,
-            Error::InvalidArgument(_) => AppbioticErrorCode::InvalidArgument,
-            Error::DeadlineExceeded(_) => AppbioticErrorCode::DeadlineExceeded,
-            Error::NotFound(_) => AppbioticErrorCode::NotFound,
-            Error::AlreadyExists(_) => AppbioticErrorCode::AlreadyExists,
-            Error::PermissionDenied(_) => AppbioticErrorCode::PermissionDenied,
-            Error::Unauthenticated(_) => AppbioticErrorCode::Unauthenticated,
-            Error::ResourceExhausted(_) => AppbioticErrorCode::ResourceExhausted,
-            Error::FailedPrecondition(_) => AppbioticErrorCode::FailedPrecondition,
-            Error::Aborted(_) => AppbioticErrorCode::Aborted,
-            Error::OutOfRange(_) => AppbioticErrorCode::OutOfRange,
-            Error::Unimplemented(_) => AppbioticErrorCode::Unimplemented,
-            Error::Internal(_) => AppbioticErrorCode::Internal,
-            Error::Unavailable(_) => AppbioticErrorCode::Unavailable,
-            Error::DataLoss(_) => AppbioticErrorCode::DataLoss,
+            Error::Cancelled(_) => Code::Cancelled,
+            Error::Unknown(_) => Code::Unknown,
+            Error::InvalidArgument(_) => Code::InvalidArgument,
+            Error::DeadlineExceeded(_) => Code::DeadlineExceeded,
+            Error::NotFound(_) => Code::NotFound,
+            Error::AlreadyExists(_) => Code::AlreadyExists,
+            Error::PermissionDenied(_) => Code::PermissionDenied,
+            Error::Unauthenticated(_) => Code::Unauthenticated,
+            Error::ResourceExhausted(_) => Code::ResourceExhausted,
+            Error::FailedPrecondition(_) => Code::FailedPrecondition,
+            Error::Aborted(_) => Code::Aborted,
+            Error::OutOfRange(_) => Code::OutOfRange,
+            Error::Unimplemented(_) => Code::Unimplemented,
+            Error::Internal(_) => Code::Internal,
+            Error::Unavailable(_) => Code::Unavailable,
+            Error::DataLoss(_) => Code::DataLoss,
         }
     }
 
