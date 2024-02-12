@@ -3,7 +3,7 @@ use std::{env, path::PathBuf};
 use appbiotic_code_generation_protos::{build, ProtosGenerationConfig};
 
 fn main() {
-    let include_dir = PathBuf::from("../../../../../external/googleapis");
+    let include_dir = PathBuf::from("../../../external/googleapis");
 
     let mut proto_files: Vec<&str> = Vec::new();
     if env::var_os("CARGO_FEATURE_RPC").is_some() {
