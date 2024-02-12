@@ -240,6 +240,7 @@ pub fn build(config: ProtosGenerationConfig) {
         .generate_default_stubs(true)
         .build_server(true)
         .build_client(true)
+        .build_transport(true)
         .include_file("_includes.rs")
         .out_dir(&out_mod_dir);
 
