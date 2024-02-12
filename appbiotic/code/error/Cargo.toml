@@ -13,7 +13,7 @@ readme = "README.md"
 full = ["json", "protos"]
 json = ["serde/derive", "serde/std", "serde_json/std"]
 protos = ["dep:prost", "dep:prost-types", "dep:tonic"]
-with-http = ["dep:http"]
+with-http = ["http/std"]
 
 [dependencies]
 http = { workspace = true, optional = true }

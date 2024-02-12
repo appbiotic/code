@@ -56,7 +56,7 @@ name = "appbiotic-code-error"
 version = "0.3.0-alpha.1"
 dependencies = [
  "cbindgen",
- "http",
+ "http 1.0.0",
  "prost",
  "prost-types",
  "serde",
@@ -84,7 +84,7 @@ version = "0.3.0-alpha.1"
 dependencies = [
  "derive-new",
  "heck",
- "http",
+ "http 1.0.0",
  "itertools 0.12.0",
  "prost",
  "prost-types",
@@ -345,13 +345,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "http"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b32afd38673a8016f7c9ae69e5af41a58f81b1d31689040f2f1959594ce194ea"
+dependencies = [
+ "bytes",
+ "fnv",
+ "itoa",
+]
+
+[[package]]
 name = "http-body"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d5f38f16d184e36f2408a55281cd658ecbd3ca05cce6d6510a176eca393e26d1"
 dependencies = [
  "bytes",
- "http",
+ "http 0.2.9",
  "pin-project-lite",
 ]
 
@@ -864,7 +875,7 @@ dependencies = [
  "async-trait",
  "base64",
  "bytes",
- "http",
+ "http 0.2.9",
  "http-body",
  "percent-encoding",
  "pin-project",
